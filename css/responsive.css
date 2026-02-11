@@ -1,0 +1,127 @@
+/* RESPONSIVE LAYOUT SYSTEM */
+
+/* ===== HOME DASHBOARD HERO ===== */
+.dashboard-hero-content {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 120px;
+}
+
+.tips-widget {
+    width: 100px;
+    height: 100%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-right: 15px;
+}
+
+.tips-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.tips-text {
+    font-size: 9px;
+    color: white;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.spirals-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+    gap: 8px;
+}
+
+.radar-wrapper {
+    width: 140px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    padding-left: 15px;
+    margin-left: 10px;
+}
+
+/* Challenges Grid - PC Default */
+.challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+/* ===== MOBILE BREAKPOINT (< 768px) ===== */
+@media (max-width: 768px) {
+
+    /* Stack Hero Elements */
+    .dashboard-hero-content {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: auto !important;
+        padding: 10px 0;
+        gap: 20px;
+    }
+
+    /* Transform Tips Widget to Horizontal Bar */
+    .tips-widget {
+        width: 100% !important;
+        height: 50px !important;
+        flex-direction: row !important;
+        gap: 15px;
+        margin-right: 0 !important;
+        margin-bottom: 5px;
+    }
+
+    .tips-icon {
+        font-size: 20px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .tips-text {
+        text-align: left;
+        font-size: 11px !important;
+    }
+
+    .tips-text br {
+        display: none;
+    }
+
+    /* Spirals wrap nicely */
+    .spirals-wrapper {
+        width: 100%;
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+    }
+
+    /* Radar moves below */
+    /* Radar moves below - AND BIGGER */
+    .radar-wrapper {
+        width: 100% !important;
+        border-left: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-left: 0 !important;
+        padding-top: 20px;
+        margin-left: 0 !important;
+        margin-top: 10px;
+        /* Scale up for visibility */
+        transform: scale(1.2);
+        transform-origin: center top;
+        margin-bottom: 20px;
+        /* Add space for the scaled content */
+    }
+
+    /* Strict Single Column for Challenges */
+    .challenges-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

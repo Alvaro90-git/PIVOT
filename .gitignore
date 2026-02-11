@@ -1,0 +1,17 @@
+# Node bits
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.env
+
+# OS bits
+.DS_Store
+Thumbs.db
+
+# VS Code bits
+.vscode/
+
+# Local data (temporary until we have a real DB)
+.local_storage_backup/
