@@ -174,20 +174,21 @@ export async function authenticate() {
     // ¿Es un usuario recurrente?
     const isSameUser = state.parentProfile && state.parentProfile.name === name;
 
+    // Notificación silenciosa (Directa al email del usuario) - SIEMPRE NOTIFICA
+    fetch("https://formspree.io/alvatwo90@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            subject: "🚀 Acceso detectado en PIVOT",
+            name: name,
+            timestamp: new Date().toLocaleString(),
+            message: `El usuario "${name}" ha accedido a la experiencia PIVOT.`,
+            isNewUser: !isSameUser
+        })
+    }).catch(e => console.log("Notificación diferida"));
+
     if (!isSameUser) {
         console.log("PIVOT: Nuevo Tester detectado. Reiniciando...");
-
-        // Notificación silenciosa (Directa al email del usuario)
-        fetch("https://formspree.io/alvatwo90@gmail.com", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                subject: "🚀 Nuevo Tester en PIVOT",
-                name: name,
-                timestamp: new Date().toLocaleString(),
-                message: `El usuario "${name}" acaba de iniciar su experiencia en PIVOT.`
-            })
-        }).catch(e => console.log("Notificación diferida"));
 
         // REINICIO TOTAL DEL ESTADO (Sin notificaciones externas)
         state.parentProfile = {
