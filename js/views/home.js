@@ -77,7 +77,7 @@ export function renderHome(container) {
            <span style="color:rgba(255,255,255,0.3); font-size:12px; font-weight:500;">Hola, ${state.parentProfile.name}</span>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
-           <div onclick="setView('expert')" style="width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer;">🔐</div>
+           <div onclick="alert('Proximamente se habilitará el espacio privado de EXPERTO, en el cual podrá hacerse seguimiento de los hijos/as con los/as profesores/as del colegio')" style="width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer;">🔐</div>
         </div>
       </div>
       <div id="tour-child-switcher" class="child-switcher" style="padding: 15px 0 0;">

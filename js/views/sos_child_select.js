@@ -57,7 +57,7 @@ export function renderSosChildSelect(container) {
         </button>
       </header>
       
-      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding-bottom:100px;">
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:40px; padding-bottom:120px;">
         
         <!-- SOS BUTTON (Animated) -->
         <div class="sos-pulse-btn">

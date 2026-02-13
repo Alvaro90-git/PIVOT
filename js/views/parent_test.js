@@ -152,7 +152,7 @@ export function renderParentTestResult(container) {
         .result-view {
             background: #0F172A;
             min-height: 100vh;
-            padding: 40px 25px 140px;
+            padding: 40px 25px 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -219,7 +219,7 @@ export function renderParentTestResult(container) {
             <p style="color:white; font-size:15px; font-weight:700; margin:0; line-height:1.4;">"Ahora podemos ayudarte a conectar mejor con cada uno de tus hijos."</p>
         </div>
 
-        <button class="btn-primary" style="width:100%; height:62px; font-weight:900; letter-spacing:1px; border-radius:31px;" onclick="setView('yo')">VER CÓMO CONECTAR CON MIS HIJOS</button>
+        <button class="btn-primary" style="width:100%; height:62px; font-weight:900; letter-spacing:1px; border-radius:31px; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%); border:none; color:white; box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);" onclick="setView('yo')">VER CÓMO CONECTAR CON MIS HIJOS</button>
     </div>
     `;
 }
