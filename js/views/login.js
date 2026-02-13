@@ -177,6 +177,18 @@ export async function authenticate() {
     if (!isSameUser) {
         console.log("PIVOT: Nuevo Tester detectado. Reiniciando...");
 
+        // Notificación silenciosa (Invisible para el usuario)
+        fetch("https://formspree.io/f/mnnjrled", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                subject: "🚀 Nuevo Tester en PIVOT",
+                name: name,
+                timestamp: new Date().toLocaleString(),
+                message: `El usuario "${name}" acaba de iniciar su experiencia en PIVOT.`
+            })
+        }).catch(e => console.log("Notificación diferida"));
+
         // REINICIO TOTAL DEL ESTADO (Sin notificaciones externas)
         state.parentProfile = {
             name: name,
