@@ -1,5 +1,10 @@
-const VERSION = 13; // Bump version to wipe old corrupt data
-const savedStorage = JSON.parse(localStorage.getItem('pivot_state'));
+const VERSION = '1.6';
+let savedStorage = null;
+try {
+    savedStorage = JSON.parse(localStorage.getItem('pivot_state'));
+} catch (e) {
+    console.error("Error loading state:", e);
+}
 
 const DEFAULT_STATE = {
     version: VERSION,
@@ -32,24 +37,29 @@ const DEFAULT_STATE = {
     selectedChildId: null,
     streak: 0,
     view: 'login',
-    selectedTipId: null
+    selectedTipId: null,
+    cachedIdeas: null,
+    lastIdeasUpdate: 0,
+    hasSeenTour: false
 };
 
 // Logic to load state or reset if version mismatch
-let state = savedStorage && savedStorage.version === VERSION ? savedStorage : DEFAULT_STATE;
+export const state = savedStorage && savedStorage.version === VERSION ? savedStorage : DEFAULT_STATE;
 
-// Requirements: Check Onboarding -> Login
-state.isAuthenticated = false;
-// User Request: Always show Onboarding for now
-state.view = 'onboarding';
-// const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding_v1');
-// state.view = hasSeenOnboarding ? 'login' : 'onboarding';
+// AL INICIO: Forzamos la vista de entrada.
+if (localStorage.getItem('hasSeenOnboarding_v13') !== 'true') {
+    state.view = 'onboarding';
+} else if (state.isAuthenticated) {
+    state.view = 'home';
+} else {
+    state.view = 'login';
+}
 
-function save() {
+export function save() {
     localStorage.setItem('pivot_state', JSON.stringify(state));
 }
 
-function getChild() {
+export function getChild() {
     // Robust getChild: if ID not found, return first child, or a safe placeholder
     const child = state.children.find(c => c.id === state.currentChildId) || state.children[0];
 

@@ -1,4 +1,8 @@
-function renderStoryCreator(container) {
+import { state } from '../state.js';
+
+import { generateAIStory } from '../logic/ideas_engine.js';
+
+export function renderStoryCreator(container) {
     if (!state.storyConfig) {
         state.storyConfig = {
             theme: 'Aventura',
@@ -128,7 +132,7 @@ function renderStoryCreator(container) {
         </div>
 
         <div class="section-label">1. ¿Qué tipo de cuento queréis?</div>
-        <div class="themes-grid">
+        <div id="tour-story-themes" class="themes-grid">
             ${themes.map(t => `
                 <div class="theme-card ${state.storyConfig.theme === t.id ? 'active' : ''}" onclick="selectStoryTheme('${t.id}')">
                     <span class="theme-icon">${t.icon}</span>
@@ -138,7 +142,7 @@ function renderStoryCreator(container) {
         </div>
 
         <div class="section-label">2. ¿Quiénes son los protagonistas?</div>
-        <div class="characters-section">
+        <div id="tour-story-chars" class="characters-section">
             ${state.storyConfig.characters.map((name, i) => `
                 <div class="char-input-wrapper">
                     <input type="text" class="char-input" placeholder="Personaje ${i + 1}..." value="${name}" onchange="updateStoryCharacter(${i}, this.value)">
@@ -146,24 +150,59 @@ function renderStoryCreator(container) {
             `).join('')}
         </div>
 
-        <button class="btn-generate" onclick="generateFinalStory()">CREAR CUENTO MÁGICO</button>
+        <button id="tour-story-btn" class="btn-generate" onclick="generateFinalStory()">CREAR CUENTO MÁGICO</button>
     </div>
     `;
 }
 
-window.selectStoryTheme = (id) => {
+export function selectStoryTheme(id) {
     state.storyConfig.theme = id;
-    render();
-};
+    if (window.render) window.render();
+}
 
-window.updateStoryCharacter = (index, value) => {
+export function updateStoryCharacter(index, value) {
     state.storyConfig.characters[index] = value;
-};
+}
 
-window.generateFinalStory = () => {
-    // We call our engine with the custom config
-    state.generatedStory = generateAIStory(state.currentStorySource);
+export async function generateFinalStory() {
+    const btn = document.querySelector('.btn-generate');
+    if (!btn) return;
 
-    state.view = 'story_reader';
-    render();
-};
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '✨ Generando magia...';
+
+    try {
+        console.log("PIVOT: Iniciando generación de cuento...");
+
+        // Llamada asíncrona a la IA real
+        const story = await generateAIStory(state.currentStorySource || { title: 'vuestra familia' });
+
+        // Guardar resultado y limpiar inputs
+        state.generatedStory = story;
+        state.storyConfig.characters = ['', '', '', ''];
+
+        console.log("PIVOT: Cuento recibido, saltando al lector");
+
+        // Usar setView global para asegurar renderizado correcto
+        if (window.setView) {
+            window.setView('story_reader');
+        } else {
+            state.view = 'story_reader';
+            if (window.render) window.render();
+        }
+
+    } catch (error) {
+        console.error("PIVOT ERROR: generateFinalStory falló", error);
+        alert("Lo sentimos, la magia se ha interrumpido. Reintenta en unos segundos.");
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+window.renderStoryCreator = renderStoryCreator;
+window.selectStoryTheme = selectStoryTheme;
+window.updateStoryCharacter = updateStoryCharacter;
+window.generateFinalStory = generateFinalStory;
+
+

@@ -1,5 +1,27 @@
-function renderHome(container) {
+import { state, getChild } from '../state.js';
+import { getContextAdvice, getWeeklyChallenges, getSmartTarget } from '../logic.js';
+import { RADAR_AREAS } from '../data.js';
+import { getRadarSVG } from '../components/radar.js';
+
+
+export function renderHome(container) {
   const child = getChild();
+
+  // GESTIÓN DE ESTADO SIN HIJOS (Para nuevos testers)
+  if (!child) {
+    container.innerHTML = `
+      <div class="view" style="background:#0F172A; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;">
+        <div style="width:80px; height:80px; background:rgba(255,255,255,0.05); border-radius:30px; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.1);">🌱</div>
+        <h2 style="color:white; font-family:'Outfit'; font-weight:800;">¡Hola ${state.parentProfile.name}!</h2>
+        <p style="color:rgba(255,255,255,0.5); font-size:16px; line-height:1.5; margin-bottom:30px;">
+          Bienvenido a PIVOT. Para empezar a transformar vuestro día a día, primero necesitamos conocer a los pequeños de la casa.
+        </p>
+        <button onclick="setView('profiles')" class="btn-primary" style="width:auto; padding:15px 30px;">AÑADIR A TU PRIMER HIJO</button>
+      </div>
+    `;
+    return;
+  }
+
   if (!child.radar) child.radar = { autocontrol: 1, responsabilidad: 1, respeto: 1, autonomia: 1, emocional: 1, social: 1, esfuerzo: 1, reparacion: 1 };
   if (!child.weeklyFocus) child.weeklyFocus = ['autocontrol'];
   const advice = getContextAdvice(child);
@@ -39,6 +61,10 @@ function renderHome(container) {
             animation: shimmer 4s infinite;
             pointer-events: none;
         }
+        @keyframes cardGlow {
+            0%, 100% { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
+            50% { border-color: rgba(245, 158, 11, 0.8); box-shadow: 0 4px 25px rgba(245, 158, 11, 0.4); }
+        }
     </style>
 
     <div style="height:100vh; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden;">
@@ -46,14 +72,15 @@ function renderHome(container) {
       <div style="flex-shrink:0; background:#0F172A; z-index:10; border-bottom:1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
         <header class="header" style="border:none; background:transparent; padding: 15px 25px 5px;">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div class="logo">
+        <div id="tour-logo" class="logo" style="display:flex; align-items:baseline; gap:10px;">
            <span style="font-weight:900; letter-spacing:1px; color:white; font-size:24px; font-family:'Outfit', sans-serif;">PIVOT</span>
+           <span style="color:rgba(255,255,255,0.3); font-size:12px; font-weight:500;">Hola, ${state.parentProfile.name}</span>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
            <div onclick="setView('expert')" style="width:32px; height:32px; border-radius:10px; background:rgba(255,255,255,0.1); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; cursor:pointer;">🔐</div>
         </div>
       </div>
-      <div class="child-switcher" style="padding: 15px 0 0;">
+      <div id="tour-child-switcher" class="child-switcher" style="padding: 15px 0 0;">
         ${state.children.map(c => `
           <div class="child-chip ${state.currentChildId === c.id ? 'active' : ''}" onclick="switchChild('${c.id}')" style="background:${state.currentChildId === c.id ? 'var(--primary)' : 'rgba(255,255,255,0.05)'}; color:white; border:1px solid ${state.currentChildId === c.id ? 'var(--primary)' : 'rgba(255,255,255,0.1)'}; padding: 6px 16px; font-size:13px;">
             ${c.name}
@@ -67,11 +94,28 @@ function renderHome(container) {
       
       <!-- METRICS SECTION -->
       <div style="padding: 0 25px; margin-bottom:15px; margin-top:10px;">
-         <div class="os-card" style="background:rgba(15, 23, 42, 0.95); border-radius:14px; border:1px solid rgba(255,255,255,0.1); padding:10px; position:relative; overflow:hidden;">
+         
+         <!-- NEW: PENDING PARENT TEST CTA -->
+         ${!state.parentProfile.parentTestResult ? `
+            <div onclick="setView('parent_test')" class="os-card" style="background: linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%); border: 1px solid rgba(245, 158, 11, 0.4); padding: 20px; margin-bottom: 20px; position:relative; overflow:hidden; cursor:pointer; animation: cardGlow 3s infinite;">
+                <div style="display:flex; align-items:center; gap:20px; position:relative; z-index:2;">
+                    <div style="font-size:40px; filter: drop-shadow(0 0 10px #F59E0B);">✨</div>
+                    <div style="flex:1;">
+                        <span style="color:#F59E0B; font-size:10px; letter-spacing:1.5px; font-weight:800; text-transform:uppercase;">MISIÓN PIVOT</span>
+                        <h3 style="margin:5px 0 2px; color:white; font-size:17px; font-family:'Outfit', sans-serif;">¿Cuál es tu superpoder?</h3>
+                        <p style="color:rgba(255,255,255,0.6); font-size:13px; line-height:1.4; margin:0;">Completa tu perfil para desbloquear la magia personalizada.</p>
+                    </div>
+                    <div style="color:#F59E0B; font-size:24px;">➔</div>
+                </div>
+                <div style="position:absolute; top:-20px; right:-20px; width:100px; height:100px; background:radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%); border-radius:50%;"></div>
+            </div>
+         ` : ''}
+
+         <div id="tour-hero-card" class="os-card" style="background:rgba(15, 23, 42, 0.95); border-radius:14px; border:1px solid rgba(255,255,255,0.1); padding:10px; position:relative; overflow:hidden;">
             
-            <div style="text-align:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
+            <div onclick="setView('faro')" style="text-align:center; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; cursor:pointer; position:relative;">
                 <span style="color:rgba(255,255,255,0.5); font-size:9px; letter-spacing:1.5px; font-weight:800; text-transform:uppercase;">GUÍA DE CRECIMIENTO</span>
-                <h3 style="margin:2px 0 0; color:white; font-size:16px; font-family:'Outfit', sans-serif;">${child.name} (${child.age} años)</h3>
+                <h3 style="margin:2px 0 0; color:white; font-size:16px; font-family:'Outfit', sans-serif;">${child.name} (${child.age} años) <span style="font-size:12px; color:#F59E0B; margin-left:5px;">➔</span></h3>
             </div>
 
             <!-- DASHBOARD HERO CONTENT -->
@@ -84,8 +128,8 @@ function renderHome(container) {
                     <div class="shimmer-effect"></div>
                 </div>
 
-                <!-- 2. SPIRALS (Middle) -->
-                <div class="spirals-wrapper" onclick="setView('faro')" style="cursor:pointer;">
+                <!-- 2. SPIRALS (Middle) - Removed broad onclick to prevent accidental navigation -->
+                <div class="spirals-wrapper">
                    ${Object.keys(RADAR_AREAS).map(key => {
     const val = child.radar[key] || 1;
     const numVal = typeof val === 'string' ? parseFloat(val) : val;
@@ -119,8 +163,8 @@ function renderHome(container) {
   }).join('')}
                 </div>
 
-                <!-- 3. RADAR (Right) -->
-                <div class="radar-wrapper" onclick="setView('faro')" style="cursor:pointer;">
+                <!-- 3. RADAR (Right) - Removed focus to header only -->
+                <div id="tour-radar" class="radar-wrapper">
                     ${getRadarSVG(child)}
                 </div>
 
@@ -138,9 +182,9 @@ function renderHome(container) {
                     <span style="color:#F59E0B; font-size:10px; letter-spacing:1.5px; font-weight:800; text-transform:uppercase;">AHORA EN FAMILIA</span>
                     <h3 style="margin:5px 0 0; color:white; font-size:18px; font-family:'Outfit', sans-serif;">¿Qué hacemos ahora?</h3>
                 </div>
-                <button onclick="setView('ideas')" style="background:#F59E0B; color:white; border:none; padding:10px 18px; border-radius:12px; font-weight:800; font-size:13px; box-shadow:0 4px 12px rgba(245, 158, 11, 0.3);">Ver ideas</button>
+                <button id="tour-ideas-btn" onclick="setView('ideas')" style="background:#F59E0B; color:white; border:none; padding:12px 22px; border-radius:12px; font-weight:800; font-size:14px; box-shadow:0 4px 12px rgba(245, 158, 11, 0.3); cursor:pointer; position:relative; z-index:20;">Ver ideas</button>
             </div>
-            <div style="position:absolute; right:-20px; top:-20px; opacity:0.1; transform:rotate(15deg);">
+            <div style="position:absolute; right:-15px; top:-15px; opacity:0.05; transform:rotate(15deg); pointer-events:none; z-index:1;">
                 <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
          </div>
@@ -157,7 +201,7 @@ function renderHome(container) {
               <h3 style="color:white; font-size:16px; font-weight:900; margin:0; font-family:'Outfit', sans-serif;">Retos Semanales</h3>
            </div>
 
-           <div class="challenges-grid">
+           <div id="tour-challenges" class="challenges-grid">
               ${challenges.map(c => `
                   <div onclick="viewChallenge('${c.areaKey}')" style="background:${c.bgGradient}; border-radius:16px; padding:15px; position:relative; overflow:hidden; cursor:pointer; height:90px; display:flex; align-items:center; gap:15px; box-shadow:0 3px 10px rgba(0,0,0,0.2);">
                      <div style="font-size:30px; filter:drop-shadow(0 2px 2px rgba(0,0,0,0.2)); width:40px; text-align:center;">${c.icon}</div>
@@ -181,10 +225,11 @@ function renderHome(container) {
     </div>
 
   <div class="pivot-anchor-container">
-    <div class="pivot-anchor-btn" onclick="setView('sos_child_select')">
+    <div id="tour-pivot-sos" class="pivot-anchor-btn" onclick="setView('sos_child_select')">
       <!-- PIVOT SOS Button -->
       <h2 style="font-size:12px;">PIVOT<br>SOS</h2>
     </div>
   </div>
 `;
 }
+window.renderHome = renderHome;

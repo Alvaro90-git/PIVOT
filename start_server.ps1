@@ -4,31 +4,15 @@
 $port = 8080
 $root = $PSScriptRoot
 
-# Detectar IP local
-$ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -notlike "*Loopback*" -and $_.InterfaceAlias -notlike "*vEthernet*" } | Select-Object -First 1).IPAddress
-
-Clear-Host
-Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host "  ANTIGRAVITY - SERVIDOR LOCAL SEGURO" -ForegroundColor White
-Write-Host "================================================================" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "  1. Asegúrate de que tu móvil está en la misma WiFi."
-Write-Host "  2. Abre esta dirección en tu móvil:"
-Write-Host ""
-Write-Host "     http://$($ip):$port/" -ForegroundColor Green
-Write-Host ""
-Write-Host "  (Mantén esta ventana abierta. Cierra para detener.)"
-Write-Host ""
-
 $listener = New-Object System.Net.HttpListener
+$listener.Prefixes.Add("http://localhost:$port/")
+$listener.Prefixes.Add("http://127.0.0.1:$port/")
+
 try {
-    $listener.Prefixes.Add("http://*:$port/")
     $listener.Start()
+    Write-Host "✅ PIVOT LISTO: Entra en http://localhost:$port/" -ForegroundColor Green
 } catch {
-    Write-Host "❌ ERROR DE PERMISOS:" -ForegroundColor Red
-    Write-Host "Para que tu móvil pueda conectar, Windows requiere permisos."
-    Write-Host "Por favor, cierra esto y haz click derecho en 'start_server.ps1' -> 'Ejecutar con PowerShell' (como Administrador)."
-    Read-Host "Presiona Enter para salir..."
+    Write-Host "❌ Error al iniciar. Asegúrate de que el puerto $port esté libre." -ForegroundColor Red
     exit
 }
 

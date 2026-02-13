@@ -1,7 +1,10 @@
 
+import { RADAR_AREAS } from './data.js';
+import { getSmartTarget } from './logic.js';
+
 // --- DAILY TIPS DATABASE (EDUCATION WITH LOVE & POSITIVE DISCIPLINE) ---
 // Sources: Discipline with Love, Montessori, Attachment Parenting
-const TIPS_DB = [
+export const TIPS_DB = [
     // --- 0-2 AÑOS: APEGO Y SEGURIDAD ---
     {
         id: 't001', area: 'autocontrol', min: 0, max: 2, title: 'El Poder del Abrazo',
@@ -122,7 +125,7 @@ const TIPS_DB = [
         color: '#10B981', icon: '✅'
     },
     {
-        id: 't207', area: 'responsabilidad', min: 6, max: 9, title: 'Gestión de Paga',
+        id: 't207', area: 'responsabilidad', min: 6, max: 9, title: 'Gestión de Paga',
         text: 'Dale una pequeña cantidad semanal para sus caprichos. Deja que la malgaste y aprenda.',
         explanation: '<b>El Porqué:</b> El valor del dinero se aprende con la escasez y la elección. Malgastar la paga en algo que se rompe enseguida es una lección mucho más potente que mil consejos tuyos.<br><br><b>Cómo aplicarlo:</b> Si se queda sin dinero el martes, no le des más. "Te entiendo, qué rabia que ya no te quede. El próximo domingo volverás a tener otra oportunidad para decidir mejor".',
         color: '#8B5CF6', icon: '💰'
@@ -154,7 +157,7 @@ const TIPS_DB = [
         color: '#10B981', icon: '🗺️'
     },
     {
-        id: 't305', area: 'esfuerzo', min: 10, max: 18, title: 'Valora el Carácter',
+        id: 't305', area: 'esfuerzo', min: 10, max: 18, title: 'Valora el Carácter',
         text: 'Elogia su integridad o amabilidad, no solo sus notas. ¿Quién es él, más allá de lo que hace?',
         explanation: '<b>El Porqué:</b> En un mundo obsesionado con el éxito externo, necesitan saber que su valor reside en su ser interior. Valorar su honestidad o valentía construye un carácter sólido.<br><br><b>Cómo aplicarlo:</b> "Me ha gustado mucho la elegancia con la que has saludado a esa persona" o "Valoro tu honestidad al contarme esto, sé que no era fácil". Refuerza la identidad, no solo el resultado.',
         color: '#6366F1', icon: '💎'
@@ -179,7 +182,7 @@ const TIPS_DB = [
     }
 ];
 
-function getDailyTipsForChild(child, count = 3) {
+export function getDailyTipsForChild(child, count = 3) {
     const today = new Date().toDateString(); // "Fri Feb 08 2026"
     const storageKeyDate = `tips_date_${child.id}`;
     const storageKeyTips = `tips_current_${child.id}`;
@@ -193,7 +196,7 @@ function getDailyTipsForChild(child, count = 3) {
             try {
                 const tipIds = JSON.parse(stored);
                 // Ensure we find the tips (in case DB changed)
-                const foundTips = tips = TIPS_DB.filter(t => tipIds.includes(t.id));
+                const foundTips = TIPS_DB.filter(t => tipIds.includes(t.id));
                 if (foundTips.length > 0) return foundTips;
             } catch (e) { console.error("Error loading tips", e); }
         }
@@ -248,3 +251,7 @@ function getDailyTipsForChild(child, count = 3) {
 
     return selected;
 }
+
+window.TIPS_DB = TIPS_DB;
+window.getDailyTipsForChild = getDailyTipsForChild;
+

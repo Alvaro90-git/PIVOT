@@ -1,4 +1,8 @@
-function renderYo(container) {
+import { state } from '../state.js';
+
+import { getDynamicMatch } from '../logic.js';
+
+export function renderYo(container) {
     const parent = state.parentProfile;
     const testDone = !!parent.parentTestResult;
 
@@ -99,7 +103,7 @@ function renderYo(container) {
                 <p style="color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.5; margin: 0 0 25px; max-width: 220px;">
                     Para recomendarte cómo conectar de forma efectiva con tus hijos.
                 </p>
-                <button onclick="startParentTest()" style="width: 100%; max-width: 200px; height: 54px; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%); color: white; border: none; border-radius: 27px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 8px 15px rgba(245, 158, 11, 0.2); font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">HACER TEST</button>
+                <button onclick="setView('parent_test')" style="width: 100%; max-width: 200px; height: 54px; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%); color: white; border: none; border-radius: 27px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 8px 15px rgba(245, 158, 11, 0.2); font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">HACER TEST</button>
             </div>
         ` : `
             <div style="background: #1E293B; margin: 0 30px 35px; padding: 30px 20px; border-radius: 32px; border: 1px solid #F59E0B44; text-align: center; border-left: 6px solid #F59E0B;">
@@ -112,7 +116,7 @@ function renderYo(container) {
                 </div>
                 <button onclick="setView('parent_test_result')" style="width: 100%; max-width: 220px; height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; font-weight: 800; font-size: 14px; cursor: pointer; margin-bottom: 20px;">Ver perfil completo</button>
                 <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-                    <button onclick="startParentTest()" style="background: none; border: none; color: #F59E0B; font-weight: 800; font-size: 13px; cursor: pointer; text-decoration: underline;">Realizar de nuevo el test</button>
+                    <button onclick="setView('parent_test')" style="background: none; border: none; color: #F59E0B; font-weight: 800; font-size: 13px; cursor: pointer; text-decoration: underline;">Realizar de nuevo el test</button>
                 </div>
             </div>
         `}
@@ -128,7 +132,7 @@ function renderYo(container) {
                 const encajeColor = dynamicMatch.color;
 
                 return `
-                            <div class="child-encaje-card" style="flex-direction: column; align-items: stretch; gap: 10px;">
+                             <div class="child-encaje-card" style="flex-direction: column; align-items: stretch; gap: 10px;">
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <div style="width:50px; height:50px; background:rgba(255,255,255,0.05); border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:24px;">👦</div>
                                 <div style="flex:1;">
@@ -160,9 +164,13 @@ function renderYo(container) {
     `;
 }
 
-function showConnectionKeys(childId) {
+export function showConnectionKeys(childId) {
     state.selectedChildId = childId;
     state.view = 'connection_keys';
     render();
 }
+
+window.renderYo = renderYo;
+window.showConnectionKeys = showConnectionKeys;
+
 

@@ -1,7 +1,9 @@
-function renderStoryReader(container) {
+import { state } from '../state.js';
+
+
+export function renderStoryReader(container) {
     if (!state.currentStorySource) {
-        state.view = 'ideas';
-        render();
+        setView('ideas');
         return;
     }
 
@@ -95,18 +97,25 @@ function renderStoryReader(container) {
     `;
 }
 
-window.adjustFontSize = (delta) => {
+export function adjustFontSize(delta) {
     state.storyFontSize = (state.storyFontSize || 18) + delta;
     if (state.storyFontSize < 12) state.storyFontSize = 12;
     if (state.storyFontSize > 32) state.storyFontSize = 32;
     render();
-};
+}
 
-window.toggleReaderMode = () => {
+export function toggleReaderMode() {
     state.storyDarkMode = state.storyDarkMode === false;
     render();
-};
+}
 
-window.saveStory = () => {
+export function saveStory() {
     alert("¡Cuento guardado en tus favoritos! ✨");
-};
+}
+
+window.renderStoryReader = renderStoryReader;
+window.adjustFontSize = adjustFontSize;
+window.toggleReaderMode = toggleReaderMode;
+window.saveStory = saveStory;
+
+

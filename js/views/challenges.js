@@ -1,4 +1,8 @@
-function setReportVal(val, element) {
+import { getChild, state, save } from '../state.js';
+import { SITUATIONS, RADAR_AREAS, CHALLENGE_DB } from '../data.js';
+import { getPersonalizedFeedbackPhrase, getWeeklyChallenges } from '../logic.js';
+
+export function setReportVal(val, element) {
    state.currentReportVal = val;
    document.querySelectorAll('.report-opt-btn').forEach(el => {
       el.style.background = 'rgba(255,255,255,0.05)';
@@ -10,7 +14,7 @@ function setReportVal(val, element) {
    element.style.fontWeight = '900';
 }
 
-function renderChallengeReport(container) {
+export function renderChallengeReport(container) {
    const child = getChild();
    state.currentReportVal = 66; // Default to 'Bien'
    container.innerHTML = `
@@ -19,7 +23,7 @@ function renderChallengeReport(container) {
       <div class="os-card" style="margin-top:40px;">
          <p class="label">RETO EN CURSO</p>
          <h3>${child.currentChallenge.title}</h3>
-         <div class="focus-why">${GROWTH_CONCEPTS[child.currentChallenge.concept].why}</div>
+         <div class="focus-why">${RADAR_AREAS[child.currentChallenge.concept].why}</div>
          
          <div style="margin-top:40px;">
             <p style="font-size:14px; font-weight:800; text-align:center; color:var(--text-muted); margin-bottom:10px;">¿Cómo ha ido hoy?</p>
@@ -36,7 +40,7 @@ function renderChallengeReport(container) {
   `;
 }
 
-function submitReport() {
+export function submitReport() {
    const val = state.currentReportVal !== undefined ? state.currentReportVal : 66;
    const child = getChild();
    const situation = state.selectedSituation ? SITUATIONS.find(s => s.id === state.selectedSituation) : null;
@@ -49,12 +53,10 @@ function submitReport() {
       situation.radarAreas.forEach(area => {
          const oldVal = child.radar[area] || 1;
          if (isPositive) {
-            // Positive: "Bien" (0.1) or "Muy bien" (0.2)
             const increment = val === 100 ? 0.2 : 0.1;
             child.radar[area] = Math.min(5, oldVal + increment);
             improvedAreas.push({ name: RADAR_AREAS[area].name, icon: RADAR_AREAS[area].icon });
          } else {
-            // Negative: "Regular" (-0.1) or "Mal" (-0.2)
             const decrement = val === 0 ? 0.2 : 0.1;
             child.radar[area] = Math.max(1, oldVal - decrement);
             improvedAreas.push({ name: RADAR_AREAS[area].name, icon: RADAR_AREAS[area].icon });
@@ -81,12 +83,11 @@ function submitReport() {
 
    state.streak = isPositive ? state.streak + 1 : 0;
    state.view = 'feedback';
-   render();
+   if (window.render) window.render();
 }
 
-function renderFeedback(container) {
-   const child = getChild();
-   const report = child.lastReport;
+export function renderFeedback(container) {
+   const report = getChild().lastReport;
    const icons = {
       success: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
       calm: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`
@@ -95,26 +96,21 @@ function renderFeedback(container) {
    container.innerHTML = `
     <div class="view login-screen" style="z-index:99999;">
       <div class="login-card" style="text-align:center; animation: cardFadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); width: 90%; max-width: 400px; padding: 40px 30px;">
-        
         ${report.isPositive
          ? `<div style="margin-bottom:20px;">${icons.success}</div>`
          : `<div class="breathing-circle">${icons.calm}</div>`
       }
-
         <h2 style="font-family:'Outfit', sans-serif; font-weight:900; font-size:28px; margin-bottom:12px; color: white;">
           ${report.isPositive ? '¡Excelente Conexión!' : 'Coge aire y sigue'}
         </h2>
-        
         <p style="color:rgba(255,255,255,0.7); font-size:15px; line-height:1.6; margin-bottom:30px;">
           ${report.personalizedPhrase}
         </p>
-        
         <div class="os-card" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); padding:20px; border-radius:20px;">
            <div style="font-weight:800; font-size:16px; color:var(--primary); letter-spacing:1px; text-transform:uppercase;">
               ${report.message}
            </div>
         </div>
-
         <div style="display:flex; justify-content:center; width:100%;">
           <button class="btn-primary" style="margin-top:40px; width:100%; border-radius:30px; font-weight:800; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%); color: white; border: none; padding: 18px; cursor: pointer; font-family: 'Outfit', sans-serif; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);" onclick="setView('home')">CONTINUAR AVENTURA</button>
         </div>
@@ -123,7 +119,7 @@ function renderFeedback(container) {
   `;
 }
 
-function toggleChallengeProgress(challengeId) {
+export function toggleChallengeProgress(challengeId) {
    if (!state.challengeProgress) state.challengeProgress = {};
    if (!state.challengeLastUpdate) state.challengeLastUpdate = {};
 
@@ -142,12 +138,8 @@ function toggleChallengeProgress(challengeId) {
    if (current < 7) {
       state.challengeProgress[challengeId] = current + 1;
       state.challengeLastUpdate[challengeId] = today;
-
-      // RECOMPENSA: +0.1 en el área correspondiente
       const oldVal = child.radar[areaKey] || 1;
       child.radar[areaKey] = Math.min(5, oldVal + 0.1);
-
-      // Registrar reporte para el feedback
       child.lastReport = {
          val: 100,
          date: new Date().toISOString(),
@@ -155,19 +147,17 @@ function toggleChallengeProgress(challengeId) {
          message: `¡AVANCE LOGRADO! +0.1 en ${RADAR_AREAS[areaKey].name}`,
          isPositive: true
       };
-
       state.streak++;
       state.view = 'feedback';
    }
-
    save();
-   render();
+   if (window.render) window.render();
 }
 
-function viewChallenge(areaKey) {
+export function viewChallenge(areaKey, container) {
    const child = getChild();
+   if (!container) container = document.getElementById('app');
 
-   // Resolve library for age
    let bracket = '0-2';
    if (child.age >= 3 && child.age <= 5) bracket = '3-5';
    else if (child.age >= 6 && child.age <= 9) bracket = '6-9';
@@ -175,22 +165,18 @@ function viewChallenge(areaKey) {
    else if (child.age >= 14) bracket = '14-18';
 
    const lib = CHALLENGE_DB[bracket][areaKey];
-   const conceptWhy = GROWTH_CONCEPTS[areaKey].why;
-
-   // Find the challenge object to get current progress
+   const conceptWhy = RADAR_AREAS[areaKey].why;
    const challenges = getWeeklyChallenges(child);
    const challenge = challenges.find(c => c.areaKey === areaKey);
 
    const progress = challenge ? challenge.completedDays : 0;
    const total = 7;
    const chId = challenge ? challenge.id : `ch_${child.id}_${areaKey}_w1`;
-
-   const app = document.getElementById('app');
    const savedLastUpdate = state.challengeLastUpdate?.[chId];
    const today = new Date().toDateString();
    const isDoneToday = savedLastUpdate === today;
 
-   app.innerHTML = `
+   container.innerHTML = `
     <style>
         .challenge-header {
             background: linear-gradient(180deg, #0D3B40 0%, #0F172A 100%);
@@ -267,20 +253,45 @@ function viewChallenge(areaKey) {
             70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
             100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
-        .step-item {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 16px;
-            border-left: 4px solid #F59E0B;
+        .timeline-container {
+            position: relative;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: rgba(255,255,255,0.05);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 25px;
+            padding-left: 30px;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -17px;
+            top: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 3px solid #0F172A;
+            z-index: 2;
+        }
+        .step-desc { color: white; font-size: 15px; line-height: 1.5; font-weight: 500; }
+        .magic-words {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px; padding: 12px 15px; margin-top: 10px;
+            border-left: 3px solid #34D399; font-size: 13px; color: #A7F3D0; font-style: italic;
         }
     </style>
 
     <div class="view scroll-y" style="background:#0F172A; padding-bottom:120px;">
-      
-      <div class="challenge-header">
+      <div id="tour-challenge-header" class="challenge-header">
          <button onclick="setView('home')" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-bottom: 20px;">✕</button>
          <div>
             <div class="concept-badge">${RADAR_AREAS[areaKey].name}</div>
@@ -288,7 +299,7 @@ function viewChallenge(areaKey) {
          </div>
       </div>
 
-      <div class="mission-card">
+      <div id="tour-challenge-mission" class="mission-card">
          <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
             <div style="font-size:50px; background:${lib.gradient}; -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">
                ${lib.icon}
@@ -298,7 +309,6 @@ function viewChallenge(areaKey) {
                <div style="color:white; font-size:18px; font-weight:700; line-height:1.3;">${lib.description}</div>
             </div>
          </div>
-
          <div class="day-tracker">
             ${Array.from({ length: 7 }).map((_, i) => {
       const isCompleted = i < progress;
@@ -306,7 +316,6 @@ function viewChallenge(areaKey) {
       return `<div class="day-circle ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">${isCompleted ? '✓' : (i + 1)}</div>`;
    }).join('')}
          </div>
-
          <div style="text-align:center;">
              <div style="font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:5px;">Progreso Semanal</div>
              <div style="font-size:20px; color:white; font-weight:900;">${progress} de 7 días</div>
@@ -314,7 +323,6 @@ function viewChallenge(areaKey) {
       </div>
 
       <div style="padding: 0 25px;">
-         
          <div class="educational-card">
             <div style="font-size:24px;">🎓</div>
             <div>
@@ -322,104 +330,36 @@ function viewChallenge(areaKey) {
                <p style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.5; margin:0;">${conceptWhy}</p>
             </div>
          </div>
-
-         <style>
-            .timeline-container {
-                position: relative;
-                margin: 20px 0;
-                padding-left: 20px;
-            }
-            .timeline-container::before {
-                content: '';
-                position: absolute;
-                left: 8px;
-                top: 10px;
-                bottom: 10px;
-                width: 2px;
-                background: rgba(255,255,255,0.05);
-            }
-            .timeline-item {
-                position: relative;
-                padding-bottom: 25px;
-                padding-left: 30px;
-            }
-            .timeline-dot {
-                position: absolute;
-                left: -17px;
-                top: 2px;
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
-                border: 3px solid #0F172A;
-                z-index: 2;
-            }
-            .phase-label {
-                font-size: 10px;
-                font-weight: 800;
-                color: rgba(255,255,255,0.4);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                margin-bottom: 4px;
-            }
-            .step-desc {
-                color: white;
-                font-size: 15px;
-                line-height: 1.5;
-                font-weight: 500;
-            }
-            .magic-words {
-                background: rgba(255,255,255,0.05);
-                border-radius: 12px;
-                padding: 12px 15px;
-                margin-top: 10px;
-                border-left: 3px solid #34D399;
-                font-size: 13px;
-                color: #A7F3D0;
-                font-style: italic;
-            }
-         </style>
-
          <h3 style="color:white; font-size:20px; font-weight:800; margin:30px 0 20px; font-family:'Outfit', sans-serif; display:flex; align-items:center; gap:10px;">
             <span style="color:#F59E0B;">▶</span> Paso a Paso
          </h3>
-
-         <div class="timeline-container">
+         <div id="tour-challenge-steps" class="timeline-container">
             ${lib.steps.map((step, i) => {
       const colors = ['#F59E0B', '#FCD34D', '#10B981'];
       const phases = ['Preparación', 'Momento clave', 'Cierre y Refuerzo'];
       return `
-                <div class="timeline-item">
-                   <div class="timeline-dot" style="background: ${colors[i]}"></div>
-                   <div class="phase-label" style="color: ${colors[i]}">${phases[i]}</div>
-                   <div class="step-desc">${step}</div>
-                </div>
-                `;
+                 <div class="timeline-item">
+                    <div class="timeline-dot" style="background: ${colors[i]}"></div>
+                    <div style="font-size: 10px; font-weight: 800; color: ${colors[i]}; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${phases[i]}</div>
+                    <div class="step-desc">${step}</div>
+                 </div>
+               `;
    }).join('')}
          </div>
-
-         <!-- Palabras Mágicas (Scripting para padres) -->
-         <div style="margin-top:10px; margin-bottom:30px;">
-            <div style="font-size:12px; color:rgba(255,255,255,0.5); font-weight:700; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-               <span>💬</span> Frase recomendada
-            </div>
-            <div class="magic-words">
-               "Entiendo que esto te cuesta, pero confío en que puedes lograrlo. Yo estoy aquí para apoyarte."
-            </div>
+         <div class="magic-words">
+            "Entiendo que esto te cuesta, pero confío en que puedes lograrlo. Yo estoy aquí para apoyarte."
          </div>
-
-         <div style="background:rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius:16px; padding:15px; margin-top:20px;">
-            <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
-               <span style="font-size:18px;">💡</span>
-               <span style="color:#F59E0B; font-weight:900; font-size:12px; text-transform:uppercase;">Tip experto</span>
-            </div>
-            <p style="color:rgba(255,255,255,0.8); font-size:13px; font-style:italic; margin:0;">"${lib.tips}"</p>
-         </div>
-
-         <button onclick="toggleChallengeProgress('${chId}')" ${isDoneToday || progress >= total ? 'disabled' : ''} style="margin-top:40px; width:100%; height:70px; background:${isDoneToday || progress >= total ? 'rgba(255,255,255,0.05)' : 'linear-gradient(90deg, #D97706 0%, #F59E0B 100%)'}; color:${isDoneToday || progress >= total ? 'rgba(255,255,255,0.3)' : 'white'}; font-weight:900; border-radius:35px; border:none; font-size:18px; box-shadow: ${isDoneToday ? 'none' : '0 15px 35px rgba(245, 158, 11, 0.3)'}; cursor:${isDoneToday ? 'default' : 'pointer'};">
+         <button id="tour-challenge-logro-btn" onclick="toggleChallengeProgress('${chId}')" ${isDoneToday || progress >= total ? 'disabled' : ''} style="margin-top:40px; width:100%; height:70px; background:${isDoneToday || progress >= total ? 'rgba(255,255,255,0.05)' : 'linear-gradient(90deg, #D97706 0%, #F59E0B 100%)'}; color:${isDoneToday || progress >= total ? 'rgba(255,255,255,0.3)' : 'white'}; font-weight:900; border-radius:35px; border:none; font-size:18px; box-shadow: ${isDoneToday ? 'none' : '0 15px 35px rgba(245, 158, 11, 0.3)'}; cursor:${isDoneToday ? 'default' : 'pointer'};">
             ${progress >= total ? '🎯 ¡RETO SUPERADO!' : (isDoneToday ? '✓ REGISTRADO POR HOY' : 'LOGRADO HOY')}
          </button>
-
       </div>
     </div>
-    `;
+   `;
 }
+
+window.setReportVal = setReportVal;
+window.renderChallengeReport = renderChallengeReport;
+window.submitReport = submitReport;
+window.renderFeedback = renderFeedback;
+window.toggleChallengeProgress = toggleChallengeProgress;
+window.viewChallenge = viewChallenge;

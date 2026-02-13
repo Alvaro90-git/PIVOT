@@ -1,4 +1,8 @@
-function renderCard(container, sitId) {
+import { getChild, state, save } from '../state.js';
+import { SITUATIONS, RESOURCES_DB } from '../data.js';
+
+
+export function renderCard(container, sitId) {
    const child = getChild();
    const sit = SITUATIONS.find(s => s.id === sitId);
    if (!sit || !sit.cards) return;
@@ -15,10 +19,10 @@ function renderCard(container, sitId) {
    container.innerHTML = `
     <div class="view scroll-y" style="padding-bottom:150px;">
       <header class="header-compact" style="background:transparent; border:none; padding: 30px 25px 10px;">
-         <button class="btn-back" onclick="setView('selector')" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">←</button>
-         <div style="margin-left:15px;">
-            <span style="font-weight:900; font-size:20px; color:white; font-family:'Outfit', sans-serif;">Guía: ${sit.name}</span>
-         </div>
+          <button class="btn-back" onclick="setView('selector')" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">←</button>
+          <div style="margin-left:15px;">
+             <span style="font-weight:900; font-size:20px; color:white; font-family:'Outfit', sans-serif;">Guía: ${sit.name}</span>
+          </div>
       </header>
 
       <div class="p-20" style="padding-top:10px;">
@@ -59,7 +63,7 @@ function renderCard(container, sitId) {
                         </div>
                     </div>
                     <div style="padding:0 20px 20px; text-align:center;">
-                        <button onclick="showResourceDetail('${r.id}', '${child.name}', '${child.temperament}')" class="btn-primary" style="width:auto; min-width:120px; background:linear-gradient(90deg, #D97706 0%, #F59E0B 100%); border:none; padding:8px 20px; font-size:11px; border-radius:35px; margin:0 auto; font-weight:900; height: auto;">VER LIBRO</button>
+                        <button onclick="alert('Funcionalidad próximamente')" class="btn-primary" style="width:auto; min-width:120px; background:linear-gradient(90deg, #D97706 0%, #F59E0B 100%); border:none; padding:8px 20px; font-size:11px; border-radius:35px; margin:0 auto; font-weight:900; height: auto;">VER LIBRO</button>
                     </div>
                 </div>
            `).join('')}
@@ -81,5 +85,40 @@ function renderCard(container, sitId) {
         </div>
       </div>
     </div>
-  `;
+   `;
 }
+
+export function setReportVal(val, btn) {
+   state.currentReportVal = val;
+   document.querySelectorAll('.report-opt-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.background = 'rgba(255,255,255,0.05)';
+      b.style.borderColor = 'rgba(255,255,255,0.1)';
+      b.style.fontWeight = '800';
+   });
+   btn.classList.add('active');
+   btn.style.background = '#F59E0B';
+   btn.style.borderColor = '#F59E0B';
+   btn.style.fontWeight = '900';
+}
+
+export function submitReport() {
+   const child = getChild();
+   const sit = SITUATIONS.find(s => s.id === state.selectedSituation);
+   if (sit && sit.radarAreas) {
+      sit.radarAreas.forEach(area => {
+         let current = child.radar[area] || 1;
+         // Impact logic: +0.2 if good, -0.1 if bad, etc.
+         const impact = (state.currentReportVal - 50) / 100 * 0.4;
+         child.radar[area] = Math.min(5, Math.max(1, current + impact));
+      });
+   }
+   state.view = 'home';
+   save();
+   if (window.render) window.render();
+}
+
+window.renderCard = renderCard;
+window.setReportVal = setReportVal;
+window.submitReport = submitReport;
+

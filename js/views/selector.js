@@ -1,4 +1,8 @@
-function renderSelector(container) {
+import { getChild, state } from '../state.js';
+import { SITUATIONS } from '../data.js';
+
+
+export function renderSelector(container) {
   const child = getChild();
 
   // 1. Filter by Age (existing logic)
@@ -64,3 +68,5 @@ function renderSelector(container) {
     </div>
   `;
 }
+
+window.renderSelector = renderSelector;

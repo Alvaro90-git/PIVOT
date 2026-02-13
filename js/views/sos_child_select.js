@@ -1,5 +1,7 @@
-// NEW FILE: View for Selecting Child in SOS Mode
-function renderSosChildSelect(container) {
+import { state } from '../state.js';
+
+
+export function renderSosChildSelect(container) {
   // Use scroll-y class and full height flex column
   container.innerHTML = `
     <style>
@@ -102,8 +104,12 @@ function renderSosChildSelect(container) {
 }
 
 // Logic to handle selection
-window.selectSosChild = (id) => {
+export function selectSosChild(id) {
   state.currentChildId = id; // Switch active child
   state.view = 'selector';   // Go to Problems list
-  render();                  // Refresh app
-};
+  if (window.render) window.render(); // Refresh app
+}
+
+window.renderSosChildSelect = renderSosChildSelect;
+window.selectSosChild = selectSosChild;
+

@@ -1,4 +1,8 @@
-function renderProfiles(container) {
+import { state, getChild } from '../state.js';
+
+import { RADAR_AREAS } from '../data.js';
+
+export function renderProfiles(container) {
   container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
       <header class="header-compact"><h2 style="font-size:24px; font-weight:900;">Gestión Familiar</h2></header>
@@ -25,8 +29,8 @@ function renderProfiles(container) {
 }
 
 
-function editChild(id) { state.editingChildId = id; state.view = 'edit_child'; render(); }
-function saveChild(id) {
+export function editChild(id) { state.editingChildId = id; state.view = 'edit_child'; if (window.render) window.render(); }
+export function saveChild(id) {
   const name = document.getElementById('name').value;
   const age = document.getElementById('age').value;
   const temp = document.getElementById('temp').value;
@@ -51,17 +55,17 @@ function saveChild(id) {
     });
   }
   state.tempRadarValues = null;
-  state.view = 'profiles'; render();
+  state.view = 'profiles'; if (window.render) window.render();
 }
 
-function deleteChild(id) {
+export function deleteChild(id) {
   if (state.children.length <= 1) { alert("Debes tener al menos un perfil de hijo."); return; }
   state.children = state.children.filter(c => c.id !== id);
   if (state.currentChildId === id) state.currentChildId = state.children[0].id;
-  state.view = 'profiles'; render();
+  state.view = 'profiles'; if (window.render) window.render();
 }
 
-function setTempRadar(key, val) {
+export function setTempRadar(key, val) {
   if (!state.tempRadarValues) state.tempRadarValues = {};
   state.tempRadarValues[key] = val;
   // Update UI manually for speed
@@ -76,7 +80,7 @@ function setTempRadar(key, val) {
   }
 }
 
-function renderEditChild(container, id) {
+export function renderEditChild(container, id) {
   const child = state.children.find(c => c.id === id) || { name: '', age: 3, temperament: 'Tranquilo', radar: {} };
   if (!state.tempRadarValues) {
     state.tempRadarValues = {};
@@ -114,7 +118,7 @@ function renderEditChild(container, id) {
     return `
               <div style="margin-bottom:25px;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                  <span style="font-size:13px; font-weight:700; color:white;">${RADAR_AREAS[k].icon} ${RADAR_AREAS[k].name}</span>
+                   <span style="font-size:13px; font-weight:700; color:white;">${RADAR_AREAS[k].icon} ${RADAR_AREAS[k].name}</span>
                 </div>
                 <div style="display:flex; gap:10px;">
                    ${[1, 2, 3, 4, 5].map(v => `
@@ -132,3 +136,12 @@ function renderEditChild(container, id) {
     </div>
   `;
 }
+
+window.renderProfiles = renderProfiles;
+window.editChild = editChild;
+window.saveChild = saveChild;
+window.deleteChild = deleteChild;
+window.setTempRadar = setTempRadar;
+window.renderEditChild = renderEditChild;
+
+

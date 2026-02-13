@@ -1,4 +1,9 @@
-function renderFaro(container) {
+import { getChild } from '../state.js';
+import { getAgeBracket } from '../logic.js';
+import { FARO_DB } from '../data.js';
+
+
+export function renderFaro(container) {
     const child = getChild();
     const ageBracket = getAgeBracket(child.age);
     let data = { ...(FARO_DB[ageBracket] || FARO_DB['1-3']) }; // Clone to avoid mutation
@@ -151,6 +156,16 @@ function renderFaro(container) {
             </div>
 
         </div>
+        <div class="faro-card" style="border: 1px dashed rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05); text-align: center;" onclick="setView('mentor')">
+            <span class="faro-label">CONSULTA PERSONALIZADA</span>
+            <div class="faro-title">¿Tienes dudas sobre ${child.name}?</div>
+            <p class="faro-text">Pregúntale a tu Mentor PIVOT. Sabe todo sobre su desarrollo y vuestro vínculo.</p>
+            <button class="btn-primary" style="margin-top:10px; background:#F59E0B; width:auto; padding:10px 25px;">Hablar con el Mentor</button>
+        </div>
+
     </div>
     `;
 }
+
+window.renderFaro = renderFaro;
+

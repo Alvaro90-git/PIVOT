@@ -1,4 +1,7 @@
-function getAgeBracket(age) {
+import { WEEKLY_PLAN_DB, CHALLENGE_DB, RADAR_AREAS, PARENT_CHILD_MATCH_DB } from './data.js';
+import { state } from './state.js';
+
+export function getAgeBracket(age) {
     if (age <= 3) return '1-3';
     if (age <= 6) return '4-6';
     if (age <= 10) return '7-10';
@@ -6,18 +9,18 @@ function getAgeBracket(age) {
     return '14-18';
 }
 
-function getWeeklyPlan(child) {
+export function getWeeklyPlan(child) {
     if (!child || !child.weeklyFocus) return { obj: 'Define un enfoque...', phrase: 'Empecemos juntos.', consequence: 'Natural.', repair: 'Reconexión.' };
     const bracket = getAgeBracket(child.age);
     const area = child.weeklyFocus[0] || 'autocontrol';
     return (WEEKLY_PLAN_DB[bracket] && WEEKLY_PLAN_DB[bracket][area]) || { obj: 'Desarrollo de hábito...', phrase: 'Vamos a trabajar esto juntos.', consequence: 'Consecuencia natural.', repair: 'Reparación positiva.' };
 }
 
-function getOptimalChallenge(child) {
+export function getOptimalChallenge(child) {
     return { id: 'radar_focus', title: 'Mejorar Autocontrol', concept: 'autocontrol' };
 }
 
-function getSmartTarget(age, area) {
+export function getSmartTarget(age, area) {
     // Scientific Developmental Targets (1-5 Scale)
     if (age <= 2) {
         switch (area) {
@@ -55,7 +58,7 @@ function getSmartTarget(age, area) {
     return 4.8;
 }
 
-function getContextAdvice(child) {
+export function getContextAdvice(child) {
     const hour = new Date().getHours();
     const age = child.age;
     if (age >= 3 && age <= 10) {
@@ -71,7 +74,7 @@ function getContextAdvice(child) {
     return { sit: 'bebe_sueno', title: 'Cuidado Vital', text: 'Mantén la calma y la rutina habitual para asegurar su bienestar.' };
 }
 
-function getWeeklyChallenges(child) {
+export function getWeeklyChallenges(child) {
     let bracket = '0-2';
     if (child.age >= 3 && child.age <= 5) bracket = '3-5';
     else if (child.age >= 6 && child.age <= 9) bracket = '6-9';
@@ -113,7 +116,7 @@ function getWeeklyChallenges(child) {
     });
 }
 
-function getDynamicMatch(childId) {
+export function getDynamicMatch(childId) {
     const child = state.children.find(c => c.id === childId);
     if (!child) return { level: 'Pendiente', color: '#64748B', score: 0 };
 
@@ -149,87 +152,62 @@ function getDynamicMatch(childId) {
     if (score >= 38) return { level: 'Medio', color: '#F59E0B', score };
     return { level: 'A mejorar', color: '#EF4444', score };
 }
-function getPersonalizedFeedbackPhrase(childName, situationId, score) {
-    // Evaluation levels
+export function getPersonalizedFeedbackPhrase(childName, situationId, score) {
+    // Evaluación basada en Sabiduría PIVOT: Empatía + Guía Experta
     const isVeryPositive = score === 100;
     const isPositive = score >= 66;
     const isNeutral = score === 33;
 
-    // Fallback if no specific situation
+    // Fallback con tono de Mentor Experto
     if (!situationId) {
-        if (isVeryPositive) return `La conexión con <b>${childName}</b> hoy ha sido excepcional; estás construyendo un vínculo de confianza indestructible.`;
-        if (isPositive) return `Buen trabajo acompañando a <b>${childName}</b>. Cada paso cuenta para fortalecer vuestra relación.`;
-        return `Educar es una carrera de fondo. Mañana será un gran día para volver a conectar con <b>${childName}</b>.`;
+        if (isVeryPositive) return `<b>Conexión profunda:</b> Tu sintonía con <b>${childName}</b> hoy ha sido excepcional. Como dice Siegel, estás integrando su mundo emocional y creando un cerebro resiliente.`;
+        if (isPositive) return `<b>Base Segura:</b> Estás haciendo un gran trabajo de acompañamiento. <b>${childName}</b> siente que eres su refugio seguro, lo cual es vital para su autonomía futura.`;
+        return `<b>Oportunidad de Crecimiento:</b> Educar es sembrar a largo plazo. Mañana será un nuevo día para volver a conectar con el corazón de <b>${childName}</b>.`;
     }
 
     const SIT_DATA = {
         'bebe_sueno': {
-            good: `Tu calma al acostar a <b>${childName}</b> le da la seguridad necesaria para entregarse al sueño.`,
-            benefit: `Con esto, <b>${childName}</b> desarrolla una relación sana con el descanso y se siente profundamente protegido.`,
-            bad: `El sueño es un proceso madurativo complejo. Tu paciencia es el mejor refugio para <b>${childName}</b> en las noches difíciles.`
-        },
-        'bebe_comida': {
-            good: `Respetar los ritmos de <b>${childName}</b> en la mesa hoy ha sido un acierto total.`,
-            benefit: `Así <b>${childName}</b> aprende a escuchar sus propias señales de saciedad y desarrolla una sana relación con la comida.`,
-            bad: `La alimentación puede ser estresante. Lo importante es que <b>${childName}</b> sienta que la mesa es un lugar seguro, no de conflicto.`
+            good: `Tu presencia calmada es el 'ancla' que <b>${childName}</b> necesita. Estás transmitiendo seguridad biológica pura.`,
+            benefit: `Al dormir desde la calma, el sistema nervioso de <b>${childName}</b> se desarrolla en un entorno de confianza absoluta.`,
+            bad: `El sueño es neurodesarrollo. No es falta de voluntad; <b>${childName}</b> solo necesita tu regulación emocional para volver a la calma.`
         },
         'rabietas': {
-            good: `Tu forma de acompañar a <b>${childName}</b> con la rabieta ha sido fabulosa.`,
-            benefit: `Con esto <b>${childName}</b> consigue más seguridad en sí mismo, aprende a regular sus emociones y a conocer mejor los límites de su entorno.`,
-            bad: `Las tormentas emocionales de <b>${childName}</b> son agotadoras. Mantenerse presente sin juzgar es la semilla de su futuro autocontrol.`
+            good: `¡Excelente ejercicio de <b>Conectar y Redirigir</b>! Has atendido su emoción antes de intentar razonar con su cerebro lógico.`,
+            benefit: `Como enseña Siegel, estás ayudando a <b>${childName}</b> a 'nombrar para dominar' sus tormentas internas, fortaleciendo sus funciones ejecutivas.`,
+            bad: `En plena rabieta, el 'cerebro de abajo' de <b>${childName}</b> ha tomado el mando. Tu papel es ser su corteza prefrontal externa hasta que pase la tormenta.`
         },
         'negativismo': {
-            good: `Gestionar el "no" de <b>${childName}</b> dándole opciones ha sido una estrategia brillante.`,
-            benefit: `Esto permite que <b>${childName}</b> sienta que tiene cierto control sobre su vida, reduciendo la frustración y fomentando su autonomía.`,
-            bad: `El negativismo es una fase de autoafirmación. Aunque sea difícil, tu guía firme y amorosa enseñará a <b>${childName}</b> a colaborar.`
-        },
-        'compartir': {
-            good: `Acompañar a <b>${childName}</b> en el respeto de turnos hoy ha sido una lección de vida fundamental.`,
-            benefit: `Al no forzar el préstamo, <b>${childName}</b> entiende que sus pertenencias están seguras y esto le predispone a ser generoso de forma natural.`,
-            bad: `No querer compartir es normal a su edad. Tu mediación ayuda a <b>${childName}</b> a entender que los turnos hacen el juego más divertido para todos.`
-        },
-        'comida_selectiva': {
-            good: `Tu firmeza amable con el nuevo alimento ha ayudado mucho a <b>${childName}</b> hoy.`,
-            benefit: `Al exponerle sin presiones, <b>${childName}</b> va perdiendo el miedo a lo desconocido y mejora su curiosidad por texturas y sabores.`,
-            bad: `Comer debe ser un placer. Si <b>${childName}</b> hoy ha rechazado algo, tu constancia sin presión será la clave para que lo pruebe mañana.`
-        },
-        'deberes': {
-            good: `Tu apoyo en los deberes de <b>${childName}</b> ha sido equilibrado y muy efectivo.`,
-            benefit: `Al no darle las respuestas y valorar su esfuerzo, <b>${childName}</b> gana confianza en su capacidad de superación y mejora su hábito de estudio.`,
-            bad: `Hay días de poca concentración. Recordar a <b>${childName}</b> que su valor no depende de sus notas le da la paz mental necesaria para seguir.`
+            good: `Al darle opciones, estás respetando su <b>Dignidad y Autonomía</b>, tal como propondría Montessori.`,
+            benefit: `Esto reduce la resistencia de <b>${childName}</b> y fomenta una autoafirmación sana dentro de unos límites seguros y amorosos.`,
+            bad: `El "No" es una fase de descubrimiento del yo. Guía a <b>${childName}</b> con firmeza amable, recordándole que su opinión importa, pero tú mantienes el rumbo.`
         },
         'pantallas_resistencia': {
-            good: `Anticipar y pactar el fin de las pantallas con <b>${childName}</b> ha funcionado de maravilla.`,
-            benefit: `Gracias a esto, <b>${childName}</b> aprende a gestionar sus impulsos y a desconectar sin que su sistema de dopamina colapse en una rabieta.`,
-            bad: `Poner límites digitales es un reto constante. Tu perseverancia protege el cerebro de <b>${childName}</b> y vuestro tiempo de calidad juntos.`
-        },
-        'adiccion_movil': {
-            good: `Pactar espacios de "desconexión total" con <b>${childName}</b> hoy ha sido una victoria para vuestro vínculo.`,
-            benefit: `Sin el móvil de por medio, el canal de comunicación con <b>${childName}</b> se abre y él siente que su presencia es lo más importante para ti.`,
-            bad: `El mundo digital es muy adictivo. Tu esfuerzo por ofrecer alternativas atractivas a <b>${childName}</b> es vital para su equilibrio emocional.`
+            good: `Has protegido el <b>Asombro</b> de <b>${childName}</b> limitando la sobreestimulación digital. ¡Un gran paso hacia la realidad!`,
+            benefit: `Como apunta L’Ecuyer, estás permitiendo que su cerebro recupere la capacidad de concentrarse en lo real y lo tangible.`,
+            bad: `Las pantallas son dopamina pura. La resistencia de <b>${childName}</b> es fisiológica. Sé su guía en este 'desierto digital' con paciencia infinita.`
         },
         'aislamiento': {
-            good: `Respetar el espacio de <b>${childName}</b> pero recordándole que estás ahí ha sido el enfoque perfecto.`,
-            benefit: `Esto le da a <b>${childName}</b> la intimidad que necesita en esta etapa mientras mantiene la red de seguridad de saber que puede contar contigo.`,
-            bad: `A veces necesitan retirarse. No lo tomes como algo personal; tu presencia silenciosa es un ancla de estabilidad invisible para <b>${childName}</b>.`
+            good: `Has respetado su espacio manteniendo el <b>Vínculo</b> intacto. Sabes ser su Base Segura incluso en la distancia.`,
+            benefit: `Esto le da a <b>${childName}</b> la intimidad necesaria para su etapa adolescente, sabiendo que siempre hay un puerto de amor al que volver.`,
+            bad: `A veces el silencio es su forma de procesar. Mantente cerca 'sin invadir', recordándole a <b>${childName}</b> que tu amor es incondicional.`
         },
         'mal_humor': {
-            good: `Validar el mal humor de <b>${childName}</b> sin dejarte arrastrar por él ha sido un ejemplo de maestría parental.`,
-            benefit: `Al verte calmado, <b>${childName}</b> aprende que las emociones se pueden gestionar sin que el entorno se desmorone por completo.`,
-            bad: `Es difícil lidiar con el mal humor. Tomar aire y recordar que <b>${childName}</b> está aprendiendo a regularse te ayudará a ser su guía.`
+            good: `Has aplicado un perfecto <b>Emotional Coaching</b> (Gottman). Validar su emoción es la llave de su corazón.`,
+            benefit: `<b>${childName}</b> aprende que todas sus emociones son válidas, aunque algunas conductas no lo sean. Eso es madurez emocional pura.`,
+            bad: `Su mal humor es una petición de ayuda oculta. Intenta descifrar qué 'lenguaje del amor' necesita <b>${childName}</b> en este momento de tensión.`
         }
     };
 
     const data = SIT_DATA[situationId];
-    if (!data) return isPositive ? `Tu enfoque con <b>${childName}</b> en esta situación refuerza vuestra conexión.` : `Cada reto con <b>${childName}</b> es una oportunidad de aprendizaje.`;
+    if (!data) return isPositive ? `Tu enfoque con <b>${childName}</b> refuerza vuestra conexión y su seguridad interna.` : `Cada reto es una oportunidad para pastorear el corazón de <b>${childName}</b> con más sabiduría.`;
 
     if (isVeryPositive) {
         return `<b>${data.good}</b> ${data.benefit}`;
     } else if (isPositive) {
-        return `${data.good} Cada día que acompañas así a <b>${childName}</b>, vuestra relación crece.`;
-    } else if (isNeutral) {
-        return `Educar no es perfecto. Hoy ha sido un reto, pero tu intención de guiar a <b>${childName}</b> es lo que realmente importa.`;
+        return `${data.good} Estás construyendo un vínculo de amor que durará para siempre.`;
+    } else if (score >= 33) {
+        return `Educar con amor no es ser perfecto. Tu intención de guiar a <b>${childName}</b> ya está dando frutos en su carácter.`;
     } else {
-        return `<b>${data.bad}</b> No te detengas, <b>${childName}</b> te necesita como su referente de calma más que nunca.`;
+        return `<b>${data.bad}</b> Manten la calma; eres el mentor experto que <b>${childName}</b> necesita para crecer en virtud.`;
     }
 }

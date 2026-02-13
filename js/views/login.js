@@ -1,4 +1,6 @@
-function renderLogin(container) {
+import { state, save } from '../state.js';
+
+export function renderLogin(container) {
     const stars = Array.from({ length: 15 }).map(() => {
         const top = Math.random() * 100;
         const left = Math.random() * 100;
@@ -120,53 +122,94 @@ function renderLogin(container) {
             
             <div style="text-align:center;">
                 <div class="pivot-logo-text">PIVOT</div>
-                <!-- Version removed -->
+                <p style="color:#F59E0B; font-size:11px; margin-top:-5px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">Acceso Tester</p>
             </div>
 
             <div class="input-group">
-                <input type="email" id="email" class="input-field" placeholder="Email" onkeypress="if(event.key === 'Enter') authenticate()">
-                <span class="input-icon">✉️</span>
+                <input type="text" id="testerName" class="input-field" placeholder="Tu Nombre" onkeypress="if(event.key === 'Enter') authenticate()">
+                <span class="input-icon">👤</span>
             </div>
 
-            <div class="input-group">
-                <input type="password" id="password" class="input-field" placeholder="Contraseña" onkeypress="if(event.key === 'Enter') authenticate()">
-                <span class="input-icon">🔒</span>
+            <div style="text-align:center; padding:10px 0;">
+                <p style="color:rgba(255,255,255,0.7); font-size:14px; line-height:1.6; font-style:italic; font-family:'Outfit', sans-serif;">
+                    "Has sido seleccionado para testear este proyecto, creado para ayudarte en lo más difícil... <span style="color:#F59E0B; font-weight:900;">educar con AMOR</span>."
+                </p>
+                <p style="color:rgba(255,255,255,0.4); font-size:12px; margin-top:15px;">Solo necesitamos tu nombre para empezar.</p>
             </div>
 
-            <button class="btn-login" onclick="authenticate()">ENTRAR</button>
-            
-            <div class="link-text" onclick="alert('Funcionalidad próximamente')">¿Olvidaste tu contraseña?</div>
+            <button class="btn-login" onclick="authenticate()">ACCEDER A LA EXPERIENCIA</button>
             
             <!-- Link to replay Onboarding -->
-            <div class="link-text" style="font-size:12px; margin-top:20px; opacity:0.5;" onclick="window.state.view='onboarding'; window.render();">
+            <div class="link-text" style="font-size:12px; margin-top:10px; opacity:0.5;" onclick="window.state.view='onboarding'; window.render();">
                 ¿Qué es PIVOT?
             </div>
 
         </div>
         
-        <div style="position:absolute; bottom:20px; font-size:10px; color:rgba(255,255,255,0.3);">
-            Protected by reCAPTCHA
+        <div style="position:absolute; bottom:20px; font-size:10px; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1px;">
+            Beta v1.5 • 2026 DeepMind Collaboration
         </div>
 
     </div>
   `;
 }
 
-// Restore missing authenticate function!
-function authenticate() {
-    // Saltamos la validación de credenciales por petición del usuario
+
+export async function authenticate() {
+    const nameInput = document.getElementById('testerName');
+    const btn = document.querySelector('.btn-login');
+    const name = nameInput ? nameInput.value.trim() : '';
+
+    if (!name) {
+        alert("Por favor, introduce tu nombre para personalizar la experiencia.");
+        return;
+    }
+
+    // Bloquear botón para evitar doble click y mostrar feedback
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'CONECTANDO...';
+    }
+
+    // ¿Es un usuario recurrente?
+    const isSameUser = state.parentProfile && state.parentProfile.name === name;
+
+    if (!isSameUser) {
+        console.log("PIVOT: Nuevo Tester detectado. Reiniciando...");
+
+        // REINICIO TOTAL DEL ESTADO (Sin notificaciones externas)
+        state.parentProfile = {
+            name: name,
+            temperament: 'Calmado',
+            parentTestResult: null
+        };
+        state.children = [];
+        state.currentChildId = null;
+        state.selectedChildId = null;
+        state.mentorMessages = null;
+        state.mentorPreferences = null;
+        state.streak = 0;
+
+        // Saltamos al perfil para que añada a su primer hijo
+        state.view = 'profiles';
+    } else {
+        console.log("PIVOT: Bienvenido de nuevo, " + name);
+        state.view = 'home';
+    }
+
     state.isAuthenticated = true;
-    state.view = 'home';
     save();
-    render();
+    if (window.render) window.render();
 }
 
-function logout() {
+export function logout() {
     state.isAuthenticated = false;
     state.view = 'login';
+    state.mentorMessages = null; // Reiniciar historial del Mentor al salir
     save();
-    render();
+    if (window.render) window.render();
 }
 
+window.renderLogin = renderLogin;
 window.authenticate = authenticate;
 window.logout = logout;

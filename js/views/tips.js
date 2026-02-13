@@ -1,4 +1,9 @@
-function renderTips(container) {
+import { getChild, state } from '../state.js';
+import { getDailyTipsForChild, TIPS_DB } from '../tips_db.js';
+import { RADAR_AREAS } from '../data.js';
+
+
+export function renderTips(container) {
     const child = getChild();
     const tips = getDailyTipsForChild(child);
 
@@ -58,7 +63,7 @@ function renderTips(container) {
     `;
 }
 
-function renderTipDetail(container, tipId) {
+export function renderTipDetail(container, tipId) {
     const tip = TIPS_DB.find(t => t.id === tipId);
     if (!tip) {
         setView('tips');
@@ -97,3 +102,21 @@ function renderTipDetail(container, tipId) {
     </div>
     `;
 }
+
+export function viewTipDetail(id) {
+    state.selectedTipId = id;
+    state.view = 'tip_detail';
+    render();
+}
+
+export function closeTipDetail() {
+    state.view = 'tips';
+    render();
+}
+
+window.renderTips = renderTips;
+window.renderTipDetail = renderTipDetail;
+window.viewTipDetail = viewTipDetail;
+window.closeTipDetail = closeTipDetail;
+
+

@@ -1,9 +1,15 @@
-function renderRadar(container) {
-    const child = getChild();
-    const ageBracket = getAgeBracket(child.age);
-    const indicators = RADAR_INDICATORS[ageBracket] || {};
+import { getChild } from '../state.js';
+import { getAgeBracket } from '../logic.js';
+import { RADAR_AREAS, RADAR_INDICATORS } from '../data.js';
+import { getRadarSVG } from '../components/radar.js';
 
-    container.innerHTML = `
+
+export function renderRadar(container) {
+  const child = getChild();
+  const ageBracket = getAgeBracket(child.age);
+  const indicators = RADAR_INDICATORS[ageBracket] || {};
+
+  container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
       <header class="header-compact"><h2 style="font-size:24px; font-weight:900;">Radar PIVOT</h2></header>
       
@@ -14,10 +20,10 @@ function renderRadar(container) {
 
       <div style="margin-top:20px;">
         ${Object.keys(RADAR_AREAS).map(key => {
-        const area = RADAR_AREAS[key];
-        const val = child.radar[key] || 1;
-        const indicator = indicators[key] || 'Hito en desarrollo...';
-        return `
+    const area = RADAR_AREAS[key];
+    const val = child.radar[key] || 1;
+    const indicator = indicators[key] || 'Hito en desarrollo...';
+    return `
             <div class="os-card" style="margin-bottom:12px; padding:12px; display:flex; align-items:center; gap:15px;">
                <div style="font-size:24px;">${area.icon}</div>
                <div style="flex:1;">
@@ -32,7 +38,7 @@ function renderRadar(container) {
                </div>
             </div>
           `;
-    }).join('')}
+  }).join('')}
       </div>
 
       <button class="btn-primary" onclick="setView('evaluation')" style="margin-top:20px;">✓ Evaluación 1 minuto</button>
@@ -40,9 +46,9 @@ function renderRadar(container) {
   `;
 }
 
-function renderRadarView(container) {
-    const child = getChild();
-    container.innerHTML = `
+export function renderRadarView(container) {
+  const child = getChild();
+  container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
       <header class="header-compact"><h2>Radar Detallado</h2></header>
       <div style="display:flex; justify-content:center; margin:20px 0;">
@@ -54,3 +60,7 @@ function renderRadarView(container) {
     </div>
   `;
 }
+
+window.renderRadar = renderRadar;
+window.renderRadarView = renderRadarView;
+

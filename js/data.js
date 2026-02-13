@@ -1,4 +1,4 @@
-const PARENT_CHILD_MATCH_DB = {
+export const PARENT_CHILD_MATCH_DB = {
     CALMADO: {
         Tranquilo: {
             level: 'Alto',
@@ -69,7 +69,7 @@ const PARENT_CHILD_MATCH_DB = {
     }
 };
 
-const PARENT_TEST_DB = {
+export const PARENT_TEST_DB = {
     dimensions: {
         reactividad: { name: 'Reactividad Emocional', low: 'Serenidad', high: 'Impulsividad' },
         firmeza: { name: 'Nivel de Firmeza', low: 'Flexibilidad', high: 'Determinación' },
@@ -126,7 +126,7 @@ const PARENT_TEST_DB = {
     }
 };
 
-const SITUATIONS = [
+export const SITUATIONS = [
     { id: 'bebe_sueno', name: 'Sueño / Dormir', icon: '🌙', min_age: 0, max_age: 2, radarAreas: ['autonomia'], cards: [{ age: 'Bebé', phrase: 'Es hora de descansar, te acompaño.', steps: ['Mantén luz tenue.', 'Evita juegos activos.', 'Rutina de arrullo habitual.'], limit: 'Horario regular.', consequence: 'Cansancio acumulado.', repair: 'Mimos al despertar.' }] },
     { id: 'bebe_comida', name: 'Alimentación', icon: '🍼', min_age: 0, max_age: 2, radarAreas: ['autonomia'], cards: [{ age: 'Bebé', phrase: 'Prueba un poquito más, es bueno para ti.', steps: ['No fuerces.', 'Hazlo divertido.', 'Respeta su saciedad.'], limit: 'Nutrición básica.', consequence: 'Hambre posterior.', repair: 'Juego tras comer.' }] },
     { id: 'bebe_seguridad', name: 'Seguridad / Peligro', icon: '⚠️', min_age: 0, max_age: 2, radarAreas: ['respeto'], cards: [{ age: 'Bebé', phrase: '¡Cuidado! Eso duele. Ven aquí.', steps: ['Retira del peligro físicamente.', 'Explica "Pupa" con calma.', 'Ofrece alternativa segura.'], limit: 'Integridad física.', consequence: 'Riesgo de daño.', repair: 'Abrazo de consuelo.' }] },
@@ -146,7 +146,7 @@ const SITUATIONS = [
     { id: 'futuro_ansiedad', name: 'Ansiedad por el futuro', icon: '🔮', min_age: 14, max_age: 18, radarAreas: ['esfuerzo', 'autocontrol'], cards: [{ age: 'Adolescente', phrase: 'Confía en tus talentos, el camino se hace paso a paso.', steps: ['Orientación constructiva.', 'No proyectes tus miedos.', 'Enfoque en el hoy.'], limit: 'Estudio/Trabajo.', consequence: 'Angustia paralizante.', repair: 'Paseo por la naturaleza.' }] }
 ];
 
-const RADAR_AREAS = {
+export const RADAR_AREAS = {
     'autocontrol': { name: 'Autocontrol', icon: '🧘', why: 'Impulsos, frustración, pausa y gestión de ira.' },
     'respeto': { name: 'Respeto y Obediencia', icon: '🤝', why: 'Seguir instrucciones, límites, normas y tono respetuoso.' },
     'autonomia': { name: 'Autonomía y Hábitos', icon: '🏠', why: 'Rutinas, autocuidado, orden y constancia diaria.' },
@@ -155,10 +155,9 @@ const RADAR_AREAS = {
     'esfuerzo': { name: 'Esfuerzo y Aprendizaje', icon: '📖', why: 'Atención, perseverancia, terminar tareas y actitud.' }
 };
 
-// Aliases for compatibility
-const GROWTH_CONCEPTS = RADAR_AREAS;
 
-const RADAR_INDICATORS = {
+
+export const RADAR_INDICATORS = {
     '1-3': {
         autocontrol: 'Espera 10s con apoyo, se calma con abrazo.',
         respeto: 'Responde a su nombre, sigue instrucc. de 1 paso.',
@@ -201,7 +200,7 @@ const RADAR_INDICATORS = {
     }
 };
 
-const WEEKLY_PLAN_DB = {
+export const WEEKLY_PLAN_DB = {
     '1-3': {
         autocontrol: { obj: 'Esperar 15s antes de pedir algo', phrase: 'Cuenta hasta 15 conmigo...', consequence: 'Pausa del juego inmediata.', repair: 'Abrazo y volver a empezar.' },
         autonomia: { obj: 'Poner los zapatos en el armario', phrase: 'Zapatos a su casita.', consequence: 'No salimos hasta que estén.', repair: 'Lo hacemos juntos una vez.' }
@@ -216,7 +215,7 @@ const WEEKLY_PLAN_DB = {
     }
 };
 
-const CHALLENGE_DB = {
+export const CHALLENGE_DB = {
     '0-2': {
         autocontrol: { title: "Esperar calmado", description: "Entrenar la paciencia básica en periodos de 10-20 segundos.", steps: ["Anticipa el momento: Antes de darle lo que quiere, dile suavemente 'Espera un poquito'.", "Mantén contacto visual: Cuenta hasta tres despacio con los dedos para que vea el paso del tiempo.", "Premia la calma: Dale el objeto inmediatamente y dile '¡Qué bien has esperado!' con una sonrisa."], icon: "⏳", gradient: "linear-gradient(135deg, #FAB005, #F03E3E)", tips: "Si se impacienta mucho, empieza con solo 3 segundos y sube poco a poco." },
         responsabilidad: { title: "Ayudante de Limpieza", description: "Fomentar el hábito de recoger participando activamente.", steps: ["Prepara el entorno: Señala la caja de juguetes y di '¡Es hora de guardar!'.", "Guía la acción: Coge su mano suavemente, ayúdale a coger un juguete y soltarlo dentro de la caja.", "Celebra el trabajo: Choca esos cinco y dile '¡Gracias por ayudar a que la casa esté bonita!'."], icon: "🧸", gradient: "linear-gradient(135deg, #3BC9DB, #228BE6)", tips: "Usa una canción de limpieza para que identifique el momento como algo divertido." },
@@ -259,7 +258,7 @@ const CHALLENGE_DB = {
     }
 };
 
-const LOGO_SVG = `
+export const LOGO_SVG = `
 <svg viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="gBlue" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#1E3A8A"/><stop offset="100%" stop-color="#3B82F6"/></linearGradient>
@@ -281,7 +280,7 @@ const LOGO_SVG = `
   <text x="110" y="80" font-family="'Outfit', sans-serif" font-weight="900" font-size="65" fill="white" letter-spacing="2">PIVOT</text>
 </svg>`;
 
-const RESOURCES_DB = [
+export const RESOURCES_DB = [
     {
         id: 'r1',
         type: 'Libro',
@@ -627,7 +626,40 @@ const RESOURCES_DB = [
     }
 ];
 
-const IDEAS_DB = {
+// BIBLIOTECA EXPERTA PIVOT (Fuentes de Verdad)
+export const EXPERT_BOOKS_DB = [
+    // DESARROLLO EMOCIONAL Y DISCIPLINA
+    { id: 'lib_01', type: 'Libro', title: 'El cerebro del niño', author: 'Daniel J. Siegel & Tina Payne Bryson', focus: 'Neuroeducación', core: 'Integración cerebral y vínculo.' },
+    { id: 'lib_02', type: 'Libro', title: 'Disciplina sin lágrimas', author: 'Daniel J. Siegel & Tina Payne Bryson', focus: 'Disciplina', core: 'Conectar antes de corregir.' },
+    { id: 'lib_03', type: 'Libro', title: 'La inteligencia emocional de los niños', author: 'John Gottman', focus: 'Emociones', core: 'Coaching emocional y validación.' },
+    { id: 'lib_04', type: 'Libro', title: 'El niño explosivo', author: 'Ross W. Greene', focus: 'Conflictos', core: 'Resolución colaborativa y proactiva.' },
+    { id: 'lib_05', type: 'Libro', title: 'Cómo hablar para que sus hijos escuchen', author: 'Adele Faber & Elaine Mazlish', focus: 'Comunicación', core: 'Habilidades prácticas de escucha y habla.' },
+    { id: 'lib_06', type: 'Libro', title: 'Disciplina positiva', author: 'Jane Nelsen', focus: 'Disciplina', core: 'Firmeza y respeto simultáneos.' },
+
+    // APEGO Y VÍNCULO
+    { id: 'lib_07', type: 'Libro', title: 'Apego y pérdida', author: 'John Bowlby', focus: 'Apego', core: 'Teoría científica del vínculo seguro.' },
+    { id: 'lib_08', type: 'Libro', title: 'No me sueltes', author: 'Gordon Neufeld', focus: 'Vínculo', core: 'Recuperar la jerarquía natural del apego.' },
+
+    // PANTALLAS Y TECNOLOGÍA
+    { id: 'lib_09', type: 'Libro', title: 'Educar en el asombro', author: 'Catherine L’Ecuyer', focus: 'Atención', core: 'Protección contra la hiperestimulación.' },
+    { id: 'lib_10', type: 'Libro', title: 'La fábrica de cretinos digitales', author: 'Michel Desmurget', focus: 'Pantallas', core: 'Impacto cognitivo de la tecnología.' },
+    { id: 'lib_11', type: 'Libro', title: 'La generación ansiosa', author: 'Jonathan Haidt', focus: 'Adolescencia', core: 'Redes sociales y salud mental.' },
+
+    // VALORES Y VISIÓN CRISTIANA
+    { id: 'lib_12', type: 'Libro', title: 'Los 5 lenguajes del amor de los niños', author: 'Gary Chapman', focus: 'Amor', core: 'Cómo percibe el afecto cada niño.' },
+    { id: 'lib_13', type: 'Libro', title: 'Paternidad', author: 'Paul David Tripp', focus: 'Valores', core: 'Educación centrada en el corazón.' },
+    { id: 'lib_14', type: 'Libro', title: 'Cómo educar a tus hijos', author: 'James Stenson', focus: 'Carácter', core: 'Liderazgo parental y virtudes.' },
+    { id: 'lib_15', type: 'Libro', title: 'Educar con sentido común', author: 'José Pedro Manglano', focus: 'Sentido Común', core: 'Pautas sencillas y profundas.' },
+    { id: 'lib_16', type: 'Libro', title: 'Formación del carácter', author: 'Francisco Cardona', focus: 'Virtudes', core: 'Hábitos y voluntad.' },
+
+    // AUTONOMÍA Y CARÁCTER
+    { id: 'lib_17', type: 'Libro', title: 'La mente absorbente del niño', author: 'Maria Montessori', focus: 'Autonomía', core: 'Respeto al potencial natural del niño.' },
+    { id: 'lib_18', type: 'Libro', title: 'Mindset', author: 'Carol Dweck', focus: 'Mentalidad', core: 'Elogio del esfuerzo frente al talento.' },
+    { id: 'lib_19', type: 'Libro', title: 'Bésame mucho', author: 'Carlos González', focus: 'Cercanía', core: 'Respeto a las necesidades biológicas.' },
+    { id: 'lib_20', type: 'Libro', title: 'Tormenta cerebral', author: 'Daniel Siegel', focus: 'Adolescencia', core: 'Neurobiología de la etapa adolescente.' }
+];
+
+export const IDEAS_DB = {
     MOMENTS: {
         MAÑANA: { hours: [6, 7, 8, 9, 10, 11], label: 'Mañana activa' },
         MEDIODIA: { hours: [12, 13, 14, 15], label: 'Sobremesa' },
@@ -679,7 +711,7 @@ const IDEAS_DB = {
     }
 };
 
-const FARO_DB = {
+export const FARO_DB = {
     '1-3': {
         neuro: "El cerebro de {name} está en la fase de 'Explosión Sináptica'. Su corteza prefrontal es muy inmadura, lo que le impide regular impulsos de forma autónoma. No es desobediencia, es incapacidad biológica.",
         psychology: "Se encuentra en la etapa de 'Autonomía frente a Vergüenza'. {pron.cap} necesita límites claros que le den seguridad mientras explora su voluntad naciente.",

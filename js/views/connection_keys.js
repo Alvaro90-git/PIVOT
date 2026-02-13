@@ -1,4 +1,9 @@
-function renderConnectionKeys(container, childId) {
+import { state } from '../state.js';
+import { PARENT_CHILD_MATCH_DB, RESOURCES_DB } from '../data.js';
+import { getDynamicMatch } from '../logic.js';
+
+
+export function renderConnectionKeys(container, childId) {
     const child = state.children.find(c => c.id === childId) || state.children[0];
     if (!child) return;
     const parent = state.parentProfile;
@@ -194,9 +199,9 @@ function renderConnectionKeys(container, childId) {
                             <div style="flex:1;">
                                 <div style="display:flex; justify-content:space-between; align-items:center;">
                                     <div style="color:rgba(16, 185, 129, 1); font-size:10px; font-weight:900; text-transform:uppercase;">Vídeo recomendado</div>
+                                    <div style="color:rgba(255,255,255,0.4); font-size:11px;">${r.author}</div>
                                 </div>
                                 <div style="color:white; font-size:14px; font-weight:800; margin-top:2px;">${r.title}</div>
-                                <div style="color:rgba(255,255,255,0.4); font-size:11px;">${r.author}</div>
                             </div>
                         </div>
                         `;
@@ -215,7 +220,7 @@ function renderConnectionKeys(container, childId) {
     `;
 }
 
-function showResourceDetail(resourceId, childName, temperament) {
+export function showResourceDetail(resourceId, childName, temperament) {
     const r = RESOURCES_DB.find(res => res.id === resourceId);
     if (!r) return;
 
@@ -264,7 +269,7 @@ function showResourceDetail(resourceId, childName, temperament) {
     modal.style.display = 'block';
 }
 
-function openExternalResource(url, title, resourceId) {
+export function openExternalResource(url, title, resourceId) {
     const reportLinkIssue = (id) => {
         const res = RESOURCES_DB.find(r => r.id === id);
         if (res) {
@@ -304,7 +309,7 @@ function generatePedagogicalContent(parentStyle, childTemp, age) {
     } else {
         timeContext = "Cierre del día / Sueño";
         timeIcon = "🌙";
-        timeNeeds = ["Bajar revoluciones sensoriales", "Ritual de seguridad"];
+        timeNeeds = ["Bajar revoluciones sensoriales", "Evento de seguridad"];
     }
 
     const stageKey = age <= 3 ? 'bebe' : (age <= 6 ? 'infantil' : (age <= 12 ? 'primaria' : 'adolescente'));
@@ -323,7 +328,7 @@ function generatePedagogicalContent(parentStyle, childTemp, age) {
             return {
                 intro: "Tu hijo está descubriendo que es una persona distinta a ti; tu paciencia es su guía.",
                 baseNeeds: ["Límites claros pero amorosos", "Opciones limitadas de elección", "Fomento de la autonomía guiada"],
-                positives: ["Dar instrucciones cortas y cara a cara.", "Refuerzar el esfuerzo, no solo el resultado.", "Permitir que elija entre dos opciones válidas."],
+                positives: ["Dar instrucciones cortas y cara a cara.", "Reforzar el esfuerzo, no solo el resultado.", "Permitir que elija entre dos opciones válidas."],
                 negatives: ["Entrar en luchas de poder innecesarias.", "Usar etiquetas negativas ante su conducta.", "Comparar su ritmo con el de otros niños."],
                 phrases: ["Tú puedes hacerlo solo, yo te miro.", "Entiendo que estés enfadado, pero no puedes pegar.", "Dime con palabras qué necesitas."]
             };
@@ -390,5 +395,7 @@ function generatePedagogicalContent(parentStyle, childTemp, age) {
     return { ...pattern, needs: finalNeeds, timeContext, timeIcon, recommendedResources };
 }
 
+window.renderConnectionKeys = renderConnectionKeys;
 window.showResourceDetail = showResourceDetail;
 window.openExternalResource = openExternalResource;
+

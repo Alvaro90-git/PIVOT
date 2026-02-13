@@ -1,253 +1,316 @@
+import { state } from '../state.js';
 
 const ONBOARDING_SLIDES = [
     {
-        title: "¿Qué es PIVOT?",
-        text: "Pulsa PIVOT AHORA y te dice <b>exactamente</b> qué decir y qué hacer.",
+        title: "Sabrás qué decir en segundos",
+        subtitle: "ORIENTACIÓN INSTANTÁNEA",
+        text: "Olvida los sermones. Pulsa el botón PIVOT y obtén la frase exacta para conectar con tu hijo al instante.",
         icon: "✨",
-        color: "#F59E0B", // Amber
-        bg: "linear-gradient(135deg, #0F292E 0%, #134E4A 100%)", // Teal
-        float: "transform: translateY(-10px);"
+        color: "#F59E0B",
+        visual: 'pivot'
     },
     {
-        title: "Retos semanales con IA",
-        text: "Retos distintos por edad (3-18 años) y nivel para avanzar cada semana.",
-        icon: "🚀",
-        color: "#FCD34D", // Light Amber
-        bg: "linear-gradient(135deg, #064E3B 0%, #047857 100%)", // Emerald
-        float: "transform: rotate(5deg) translateY(-5px);"
+        title: "Crea aventuras inolvidables",
+        subtitle: "CUENTOS MÁGICOS",
+        text: "Diseñad juntos historias donde tus hijos son los héroes. Una forma única de transmitir valores y amor.",
+        icon: "📖",
+        color: "#10B981",
+        visual: 'stories'
     },
     {
-        title: "Modo pareja + progreso",
-        text: "Coherencia en casa, métricas y objetivos por cada hijo/a.",
-        icon: "👨‍👩‍👧‍👦",
-        color: "#34D399", // Soft Green
-        bg: "linear-gradient(135deg, #065F46 0%, #10B981 100%)",
-        float: "transform: scale(1.1);"
+        title: "Métricas del corazón",
+        subtitle: "PROGRESO REAL",
+        text: "Observa cómo crece el carácter de tu hijo con diagramas inteligentes de autonomía, esfuerzo y respeto.",
+        icon: "📊",
+        color: "#3B82F6",
+        visual: 'radar'
+    },
+    {
+        title: "Sabiduría experta a tu alcance",
+        subtitle: "BIBLIOTECA PIVOT",
+        text: "Libros, vídeos y recursos de neurociencia seleccionados específicamente para vuestro momento actual.",
+        icon: "📚",
+        color: "#8B5CF6",
+        visual: 'library'
+    },
+    {
+        title: "Tu guía personal 24/7",
+        subtitle: "SIEMPRE A TU LADO",
+        text: "Un experto disponible en cada momento para resolver dudas, gestionar crisis y acompañarte siempre.",
+        icon: "👨‍🏫",
+        color: "#EC4899",
+        visual: 'mentor'
     }
 ];
 
-function renderOnboarding(container) {
+let autoPlayInterval = null;
+
+export function renderOnboarding(container) {
     container.innerHTML = `
     <style>
-        .onboarding-container {
+        .ob-full {
             height: 100vh;
+            width: 100vw;
+            background: #020617;
+            position: fixed;
+            top: 0; left: 0;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            background: #0B1E22; /* Base Teal Dark */
-            overflow: hidden;
-            position: relative;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
+            z-index: 100000;
         }
 
-        /* Ambient Background (Teal/Emerald Nebula) */
-        .onboarding-bg {
+        .ob-gradient-bg {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, #0F292E 0%, #115E59 60%, #134E4A 100%);
+            inset: 0;
+            background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #020617 80%);
             z-index: 1;
         }
-        .star {
+
+        /* Fixed Brand Logo */
+        .ob-brand-logo {
             position: absolute;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: twinkle 4s infinite ease-in-out;
-        }
-        @keyframes twinkle { 0%, 100% { opacity:0.1; transform:scale(0.8); } 50% { opacity:0.6; transform:scale(1.2); } }
-
-        /* Carousel */
-        .carousel-snap {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            flex: 1;
-            z-index: 10;
-            scrollbar-width: none; 
-            padding-top: 100px;
-        }
-        .carousel-snap::-webkit-scrollbar { display: none; }
-
-        .slide {
-            min-width: 100vw;
-            scroll-snap-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 20px 40px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        /* Card Style - Clean Glass on Teal */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 30px;
-            width: 100%;
-            max-width: 320px;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-            animation: floatCard 6s ease-in-out infinite;
-        }
-        @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        .illustration-placeholder {
-            font-size: 80px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.15));
-            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popIn { from { transform: scale(0); opacity:0; } to { transform: scale(1); opacity:1; } }
-
-        .slide-title {
+            top: 40px;
+            left: 30px;
+            z-index: 100;
             font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 24px;
-            color: #F1F5F9; /* Off-white */
-            margin-bottom: 15px;
-            line-height: 1.2;
+            font-weight: 900;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: white;
+            pointer-events: none;
         }
 
-        .slide-text {
-            font-size: 16px; 
-            color: rgba(255,255,255,0.85); 
-            line-height: 1.6;
-        }
-
-        /* Dots */
-        .dots-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 30px;
+        /* Centered Content Container */
+        .ob-main-wrapper {
+            position: relative;
             z-index: 10;
-            justify-content: center;
+            height: 100%;
             width: 100%;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            transition: all 0.3s;
-        }
-        .dot.active {
-            background: #F59E0B; /* Amber Active Dot */
-            width: 24px;
-            border-radius: 10px;
-        }
-
-        /* Sticky Button Area */
-        .bottom-actions {
-            z-index: 20;
-            padding: 0 30px 40px;
-            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 20px 30px; /* Reduced top padding */
             box-sizing: border-box;
-            background: linear-gradient(to top, #0B1E22 20%, transparent); /* Match bg */
         }
 
-        .btn-access {
-            /* Warm Amber Gradient */
+        /* Visual Area - FIXED HEIGHT TO PREVENT SHIFT */
+        .ob-visual-area {
+            height: 30vh; /* Reduced from 35vh */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 25px; /* Increased from 10px to give space to subtitle */
+        }
+
+        .ob-mockup {
+            width: 110px; /* Scaled down slightly */
+            height: 220px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 24px;
+            border: 5px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+
+        .ob-float-icon {
+            position: absolute;
+            top: 10px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #ffffff;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        /* Text Area - FIXED HEIGHT TO PREVENT SHIFT */
+        .ob-txt-area {
+            height: 160px; /* Reduced from 200px */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .ob-subtitle {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--slide-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .ob-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px; /* Reduced from 28px */
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .ob-desc {
+            font-size: 14px; /* Reduced from 15px */
+            line-height: 1.5;
+            color: #94A3B8;
+            font-weight: 500;
+            max-width: 300px;
+        }
+
+        /* Fixed Bottom Area - ANCHORED */
+        .ob-bottom-fixed {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 5px;
+        }
+
+        .ob-dots {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .ob-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.4s ease;
+        }
+        .ob-dot.active {
+            width: 25px;
+            background: #F59E0B;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .ob-btn {
+            width: 100%;
+            height: 55px; /* Reduced height from 65px */
             background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%);
             color: white;
             border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 30px;
+            border-radius: 18px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 900;
             font-family: 'Outfit', sans-serif;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3); /* Amber Shadow */
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.4);
+            text-transform: uppercase;
         }
-        .btn-access:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2); }
 
+        /* Animations */
+        .pulse-core { width: 50px; height: 50px; background: #F59E0B; border-radius: 50%; animation: pulseS 2s infinite; }
+        @keyframes pulseS { 0%, 100% { scale: 1; opacity: 1; } 50% { scale: 1.25; opacity: 0.7; } }
+        
+        .bar-wrap { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
+        .bar-ob { width: 12px; background: #3B82F6; border-radius: 4px; animation: barUp 2.5s infinite; }
+        @keyframes barUp { 0% { height: 0; } 50% { height: var(--h); } 100% { height: var(--h); } }
+
+        .line-wrap { width: 100%; padding: 0 20px; }
+        .line-ob { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0; overflow: hidden; position: relative; }
+        .line-fill-ob { position: absolute; left: 0; top: 0; height: 100%; background: #10B981; animation: fillW 2.5s infinite; }
+        @keyframes fillW { 0% { width: 0; } 70% { width: 100%; } 100% { width: 100%; } }
     </style>
 
-    <div class="onboarding-container">
+    <div class="ob-full" id="obContainer">
+        <div class="ob-gradient-bg"></div>
+        <div class="ob-brand-logo">PIVOT</div>
         
-        <!-- Background Stars (simple generation) - Subtle -->
-        <div class="onboarding-bg">
-            ${Array.from({ length: 15 }).map(() =>
-        `<div class="star" style="top:${Math.random() * 100}%; left:${Math.random() * 100}%; width:${Math.random() * 2 + 1}px; height:${Math.random() * 2 + 1}px; animation-delay:${Math.random() * 3}s"></div>`
-    ).join('')}
-        </div>
-
-        <!-- Header -->
-        <div style="position:absolute; top:20px; left:0; width:100%; text-align:center; z-index:20;">
-            <div style="display:inline-flex; align-items:center; gap:8px; margin-bottom:5px;">
-                <span style="font-family:'Outfit', sans-serif; font-weight:900; font-size:20px; color:white; letter-spacing:1px;">PIVOT</span>
+        <div class="ob-main-wrapper">
+            <div class="ob-visual-area" id="obVisual">
+                <!-- Injected -->
             </div>
-            <div style="font-size:12px; color:rgba(255,255,255,0.7);">Educación con AMOR en 10 segundos.</div>
-            
-            <button onclick="finishOnboarding()" style="position:absolute; top:5px; right:20px; background:none; border:none; color:rgba(255,255,255,0.5); font-size:12px; cursor:pointer;">Saltar</button>
-        </div>
 
-        <!-- Carousel -->
-        <div class="carousel-snap" id="onboardingCarousel" onscroll="updateDots()">
-            ${ONBOARDING_SLIDES.map((slide, index) => `
-                <div class="slide">
-                    <div class="glass-card">
-                        <div class="illustration-placeholder" style="${slide.float}">
-                            ${slide.icon}
-                        </div>
-                        <!-- Titles colored with warm amber/teal accents -->
-                        <h2 class="slide-title" style="color:${index === 1 ? '#FCD34D' : (index === 2 ? '#6EE7B7' : '#F1F5F9')}">${slide.title}</h2>
-                        <p class="slide-text">${slide.text}</p>
-                        
-                        <!-- Bullets -->
-                        <div style="margin-top:20px; display:flex; flex-direction:column; gap:8px; width:100%;">
-                           <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px; font-size:12px; color:rgba(255,255,255,0.8); border:1px solid rgba(255,255,255,0.1);">
-                              ✨ ${index === 0 ? 'Sin sermones, directo al grano' : (index === 1 ? 'Personalizado para tu hijo' : 'Tu pareja en el mismo equipo')}
-                           </div>
-                        </div>
-                    </div>
+            <div class="ob-txt-area" id="obTextBox">
+                <!-- Injected -->
+            </div>
+
+            <div class="ob-bottom-fixed">
+                <div class="ob-dots" id="obDots">
+                    ${ONBOARDING_SLIDES.map((_, i) => `<div class="ob-dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
                 </div>
-            `).join('')}
+                <button class="ob-btn" onclick="finishOnboarding()">EMPEZAR AHORA</button>
+            </div>
         </div>
-
-        <!-- Pagination Dots -->
-        <div class="dots-container" id="dotsContainer">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-
-        <!-- Bottom Actions -->
-        <div class="bottom-actions">
-            <button class="btn-access" onclick="finishOnboarding()">ACCEDER</button>
-        </div>
-
     </div>
-    
     `;
+
+    initCycle();
 }
 
-function updateDots() {
-    const carousel = document.getElementById('onboardingCarousel');
-    if (!carousel) return;
-    const dots = document.querySelectorAll('.dot');
-    const scrollLeft = carousel.scrollLeft;
-    const width = carousel.offsetWidth;
-    const index = Math.round(scrollLeft / width);
+function initCycle() {
+    let index = 0;
+    const visual = document.getElementById('obVisual');
+    const textBox = document.getElementById('obTextBox');
+    const dots = document.querySelectorAll('.ob-dot');
 
-    dots.forEach((dot, i) => {
-        if (i === index) dot.classList.add('active');
-        else dot.classList.remove('active');
-    });
+    const renderStep = () => {
+        const slide = ONBOARDING_SLIDES[index];
+
+        // VISUAL PULSE
+        visual.style.transition = 'none';
+        visual.style.opacity = 0;
+        visual.style.transform = 'scale(0.95)';
+
+        setTimeout(() => {
+            visual.innerHTML = `
+                <div class="ob-mockup">
+                    ${index === 0 ? '<div class="pulse-core"></div>' : ''}
+                    ${index === 1 ? '<div class="line-wrap"><div class="line-ob"><div class="line-fill-ob"></div></div><div class="line-ob"><div class="line-fill-ob" style="animation-delay:0.5s"></div></div><div class="line-ob" style="width:70%"><div class="line-fill-ob" style="animation-delay:1s"></div></div></div>' : ''}
+                    ${index === 2 ? '<div class="bar-wrap"><div class="bar-ob" style="--h:40px"></div><div class="bar-ob" style="--h:80px; animation-delay:0.2s"></div><div class="bar-ob" style="--h:60px; animation-delay:0.4s"></div><div class="bar-ob" style="--h:90px; animation-delay:0.6s"></div></div>' : ''}
+                    ${index === 3 ? '<div style="font-size:60px">📚</div>' : ''}
+                    ${index === 4 ? '<div style="width:50px; height:50px; background:#EC4899; border-radius:14px; box-shadow:0 0 30px #EC4899; animation: pulseS 2s infinite;"></div>' : ''}
+                </div>
+                <div class="ob-float-icon" style="animation: bounceIcon 1s forwards;">${slide.icon}</div>
+            `;
+            visual.style.transition = 'all 0.6s cubic-bezier(0.19, 1, 0.22, 1)';
+            visual.style.opacity = 1;
+            visual.style.transform = 'scale(1)';
+        }, 50);
+
+        // TEXT UPDATE
+        textBox.innerHTML = `
+            <div class="ob-subtitle" style="--slide-color:${slide.color}">${slide.subtitle}</div>
+            <h2 class="ob-title">${slide.title}</h2>
+            <p class="ob-desc">${slide.text}</p>
+        `;
+
+        // DOTS
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+    };
+
+    renderStep();
+
+    autoPlayInterval = setInterval(() => {
+        index = (index + 1) % ONBOARDING_SLIDES.length;
+        renderStep();
+    }, 4500);
 }
-window.updateDots = updateDots;
 
-// Global function to finish
-window.finishOnboarding = () => {
-    localStorage.setItem('hasSeenOnboarding_v1', 'true');
-    setView('login');
-};
+export function finishOnboarding() {
+    if (autoPlayInterval) clearInterval(autoPlayInterval);
+    localStorage.setItem('hasSeenOnboarding_v13', 'true');
+    if (window.setView) window.setView('login');
+}
+
+window.finishOnboarding = finishOnboarding;
+window.renderOnboarding = renderOnboarding;

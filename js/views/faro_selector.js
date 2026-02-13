@@ -1,4 +1,7 @@
-function renderFaroSelector(container) {
+import { state } from '../state.js';
+
+
+export function renderFaroSelector(container) {
     container.innerHTML = `
     <style>
         .selector-view {
@@ -129,16 +132,22 @@ function renderFaroSelector(container) {
     `;
 }
 
-function selectFaroChild(id) {
+export function selectFaroChild(id) {
     state.currentChildId = id;
     state.view = 'faro';
     render();
 }
 
-function getAgeBracketLabel(age) {
+export function getAgeBracketLabel(age) {
     if (age <= 3) return 'Primeros Pasos';
     if (age <= 6) return 'Exploración Infantil';
     if (age <= 10) return 'Gran Aprendizaje';
     if (age <= 13) return 'Pre-Adolescencia';
     return 'Hacia la Madurez';
 }
+
+window.renderFaroSelector = renderFaroSelector;
+window.selectFaroChild = selectFaroChild;
+window.getAgeBracketLabel = getAgeBracketLabel;
+
+

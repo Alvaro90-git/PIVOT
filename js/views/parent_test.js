@@ -1,14 +1,17 @@
+import { state } from '../state.js';
+
+import { PARENT_TEST_DB } from '../data.js';
+
 let currentTestStep = 0;
 let testAnswers = {};
 
-function startParentTest() {
+export function startParentTest() {
     currentTestStep = 0;
     testAnswers = {};
-    state.view = 'parent_test';
-    render();
+    if (window.setView) window.setView('parent_test');
 }
 
-function renderParentTest(container) {
+export function renderParentTest(container) {
     const question = PARENT_TEST_DB.questions[currentTestStep];
     const totalSteps = PARENT_TEST_DB.questions.length;
     const progress = (currentTestStep / totalSteps) * 100;
@@ -98,19 +101,19 @@ function renderParentTest(container) {
     `;
 }
 
-function handleTestAnswer(value) {
+export function handleTestAnswer(value) {
     const question = PARENT_TEST_DB.questions[currentTestStep];
     testAnswers[question.dim] = (testAnswers[question.dim] || 0) + value;
 
     if (currentTestStep < PARENT_TEST_DB.questions.length - 1) {
         currentTestStep++;
-        render();
+        if (window.render) window.render();
     } else {
         calculateTestResult();
     }
 }
 
-function calculateTestResult() {
+export function calculateTestResult() {
     const dims = ['reactividad', 'firmeza', 'control', 'estilo', 'reparacion'];
 
     // Determine profile
@@ -138,10 +141,10 @@ function calculateTestResult() {
     };
 
     state.view = 'parent_test_result';
-    render();
+    if (window.render) window.render();
 }
 
-function renderParentTestResult(container) {
+export function renderParentTestResult(container) {
     const result = state.parentProfile.parentTestResult;
 
     container.innerHTML = `
@@ -220,3 +223,11 @@ function renderParentTestResult(container) {
     </div>
     `;
 }
+
+window.startParentTest = startParentTest;
+window.renderParentTest = renderParentTest;
+window.handleTestAnswer = handleTestAnswer;
+window.calculateTestResult = calculateTestResult;
+window.renderParentTestResult = renderParentTestResult;
+
+

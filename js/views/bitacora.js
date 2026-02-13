@@ -1,4 +1,7 @@
-function renderBitacora(container) {
+import { getChild } from '../state.js';
+
+
+export function renderBitacora(container) {
     const child = getChild();
     const narrative = generateAINarrative(child);
 
@@ -186,7 +189,7 @@ function renderBitacora(container) {
     `;
 }
 
-function generateAINarrative(child) {
+export function generateAINarrative(child) {
     const name = child.name;
     const age = child.age;
     const isMale = child.gender === 'chico';
@@ -243,3 +246,8 @@ function generateAINarrative(child) {
         chapter4: { text: ch4Text, virtues: ch4Virtues }
     };
 }
+
+window.renderBitacora = renderBitacora;
+window.generateAINarrative = generateAINarrative;
+
+

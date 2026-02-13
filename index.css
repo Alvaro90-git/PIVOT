@@ -1436,34 +1436,58 @@ strong {
 }
 
 .nav-bar {
+  position: fixed !important;
+  bottom: 25px !important;
+  left: 20px !important;
+  right: 20px !important;
+  height: 75px !important;
   background: rgba(15, 23, 42, 0.95) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 25px !important;
+  display: flex !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  padding: 0 10px !important;
+  z-index: 10000 !important;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
 .nav-item {
   color: rgba(255, 255, 255, 0.6) !important;
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 5px 2px !important;
+  min-width: 0 !important;
+  cursor: pointer !important;
 }
 
-.nav-item.active {
-  color: #FFFFFF !important;
-  background: rgba(79, 70, 229, 0.2) !important;
-}
-
-.nav-icon svg {
-  stroke: currentColor !important;
-}
-
-.nav-bar {
-  background: rgba(15, 23, 42, 0.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.nav-item {
-  color: rgba(255, 255, 255, 0.5) !important;
+.nav-item span {
+  font-size: 10px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .nav-item.active {
   color: #FFFFFF !important;
   background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.nav-icon svg {
+  stroke: currentColor !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.mentor-nav-glow {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%) !important;
 }

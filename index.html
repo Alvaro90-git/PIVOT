@@ -5,35 +5,67 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PIVOT - SYNC_SUCCESS_V3</title>
-    <link rel="stylesheet" href="index.css?v=1.0.3">
-    <link rel="stylesheet" href="css/responsive.css?v=1.0.0">
+    <title>PIVOT - Educación Conectada</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <style>
+        body {
+            background: #0F172A;
+            margin: 0;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+
         #app:empty::before {
-            content: 'Iniciando Aventura...';
+            content: 'Iniciando PIVOT...';
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            color: #4F46E5;
-            font-family: sans-serif;
+            color: #F59E0B;
+            font-family: 'Outfit', sans-serif;
             font-weight: 800;
         }
 
-        .sync-banner {
+        #critical-error {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: #EF4444;
-            color: white;
-            text-align: center;
-            font-family: sans-serif;
-            font-weight: 900;
-            font-size: 14px;
-            padding: 8px;
+            bottom: 0;
+            background: #000000;
+            /* Fondo negro total para contraste */
+            color: #FFFFFF;
+            padding: 40px 20px;
             z-index: 9999999;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-card {
+            background: #1E293B;
+            padding: 30px;
+            border-radius: 24px;
+            border: 2px solid #EF4444;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .btn-retry {
+            background: #F59E0B;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-weight: 900;
+            margin-top: 25px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
         }
     </style>
 </head>
@@ -41,39 +73,40 @@
 <body>
 
     <div id="app"></div>
-    <!-- Core Data & State -->
-    <script src="js/data.js"></script>
-    <script src="js/state.js"></script>
-    <script src="js/logic.js"></script>
-    <script src="js/tips_db.js"></script>
 
-    <!-- Components -->
-    <script src="js/components/radar.js"></script>
+    <div id="critical-error">
+        <div class="error-card" style="border:none; background:#1E293B;">
+            <div style="font-size:60px; margin-bottom:20px; animation: bounce 2s infinite;">🚀</div>
+            <h2 style="color:white; font-family:'Outfit'; font-weight:900; margin:0 0 10px; font-size:28px;">¡HOLA!</h2>
+            <p style="color:#94A3B8; font-size:16px; line-height:1.6; margin-bottom:30px;">
+                Para entrar en la experiencia PIVOT, por favor usa el lanzador oficial:
+            </p>
+            <div
+                style="background:rgba(245,158,11,0.1); padding:20px; border-radius:15px; border:1px dashed #F59E0B; margin-bottom:30px;">
+                <p style="color:#F59E0B; font-weight:800; margin:0; font-size:14px;">PASO 1: Doble clic en
+                    <b>START_PIVOT.bat</b>
+                </p>
+            </div>
+            <p style="font-size:12px; color:#64748B;">(Si ya lo has hecho, el navegador se abrira solo en un segundo)
+            </p>
+        </div>
+    </div>
 
-    <!-- Views -->
-    <script src="js/views/onboarding.js"></script>
-    <script src="js/views/login.js"></script>
-    <script src="js/views/home.js"></script>
-    <script src="js/views/selector.js"></script>
-    <script src="js/views/card.js"></script>
-    <script src="js/views/profiles.js"></script>
-    <script src="js/views/yo.js"></script>
-    <script src="js/views/parent_test.js"></script>
-    <script src="js/views/connection_keys.js"></script>
-    <script src="js/views/faro.js"></script>
-    <script src="js/views/faro_selector.js"></script>
-    <script src="js/logic/ideas_engine.js"></script>
-    <script src="js/views/bitacora.js"></script>
-    <script src="js/views/now_in_family.js"></script>
-    <script src="js/views/story_creator.js"></script>
-    <script src="js/views/story_reader.js"></script>
-    <script src="js/views/evaluation.js"></script>
-    <script src="js/views/tips.js"></script>
-    <script src="js/views/challenges.js"></script>
+    <script>
+        // Si estamos en localhost, intentamos cargar normal
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            document.getElementById('critical-error').style.display = 'none';
+        } else {
+            document.getElementById('critical-error').style.display = 'flex';
+        }
 
-    <!-- Main App -->
-    <script src="js/views/sos_child_select.js"></script>
-    <script src="js/app.js"></script>
+        // Carga de la App
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = 'js/app.js?v=' + Date.now();
+        document.body.appendChild(script);
+    </script>
+
 </body>
 
 </html>

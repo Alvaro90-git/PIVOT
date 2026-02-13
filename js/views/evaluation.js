@@ -1,4 +1,8 @@
-function toggleFocusArea(area) {
+import { getChild } from '../state.js';
+
+import { RADAR_AREAS } from '../data.js';
+
+export function toggleFocusArea(area) {
   const child = getChild();
   const idx = child.weeklyFocus.indexOf(area);
   if (idx > -1) {
@@ -10,17 +14,17 @@ function toggleFocusArea(area) {
   render();
 }
 
-function updateEvalScore(area, val) {
+export function updateEvalScore(area, val) {
   const child = getChild();
   child.radar[area] = val;
   render();
 }
 
-function saveEvaluation() {
+export function saveEvaluation() {
   setView('home');
 }
 
-function renderEvaluation(container) {
+export function renderEvaluation(container) {
   const child = getChild();
   container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
@@ -60,3 +64,9 @@ function renderEvaluation(container) {
     </div>
   `;
 }
+
+window.renderEvaluation = renderEvaluation;
+window.toggleFocusArea = toggleFocusArea;
+window.updateEvalScore = updateEvalScore;
+window.saveEvaluation = saveEvaluation;
+

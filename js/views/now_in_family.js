@@ -1,182 +1,199 @@
-function renderNowInFamily(container) {
+import { state } from '../state.js';
+
+import { getIdeasContext, getPersonalizedIdeas } from '../logic/ideas_engine.js';
+import { IDEAS_DB } from '../data.js';
+
+export async function renderNowInFamily(container) {
     const context = getIdeasContext();
-    const ideas = getPersonalizedIdeas();
+
+    // Si NO hay NADA en caché, mostramos estado de carga (primera vez absoluta)
+    if (!state.cachedIdeas) {
+        container.innerHTML = `
+        <div class="view now-in-family-view" style="z-index: 9999; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+            <div class="breathing-circle" style="width:80px; height:80px; margin-bottom:20px;">
+                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 3s linear infinite;">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                 </svg>
+            </div>
+            <h2 style="font-family:'Outfit'; font-weight:900; color:white; margin:0;">Generando inspiración...</h2>
+        </div>`;
+    }
+
+    // Al existir caché en ideas_engine.js, esta llamada resuelve instantáneamente los datos guardados
+    const ideas = await getPersonalizedIdeas();
 
     container.innerHTML = `
     <style>
         .now-in-family-view {
-            background: #0F172A;
+            background: #020617;
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
             padding-bottom: 120px;
-        }
-        .moment-header {
-            padding: 40px 25px 30px;
-            background: linear-gradient(to bottom, #1E293B, #0F172A);
-        }
-        .moment-tag {
-            background: rgba(245, 158, 11, 0.15);
-            color: #F59E0B;
-            padding: 6px 14px;
-            border-radius: 99px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            display: inline-block;
-            border: 1px solid rgba(245, 158, 11, 0.2);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253, 16%, 15%, 1) 0, transparent 60%),
+                radial-gradient(at 100% 0%, hsla(225, 39%, 20%, 1) 0, transparent 60%);
         }
         
+        .moment-header {
+            padding: 20px 25px 30px;
+            text-align: left;
+        }
+
         .cards-container {
-            padding: 0 25px;
+            padding: 0 20px;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
         }
 
         .pivot-card {
-            background: linear-gradient(145deg, #1E293B, #0F172A);
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 32px;
-            padding: 24px;
-            color: #F8FAFC;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 320px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .pivot-card.featured {
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .card-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 26px;
-            font-weight: 900;
-            margin: 0 0 16px 0;
-            color: white;
-            letter-spacing: -0.5px;
-        }
-
-        .card-image-wrapper {
+        .card-header-image {
             width: 100%;
-            height: 200px;
-            border-radius: 24px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            background: rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            height: 180px;
+            position: relative;
+            background: #1e293b;
         }
+
         .card-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 1) 0%, transparent 60%);
+        }
+
+        .pill-type {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(245, 158, 11, 0.2);
+            backdrop-filter: blur(10px);
+            color: #F59E0B;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .card-body {
+            padding: 24px;
+            padding-top: 10px;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            margin: 0 0 12px 0;
+            line-height: 1.2;
         }
 
         .card-desc {
             font-size: 15px;
             line-height: 1.6;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 24px;
-            flex-grow: 1;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+            font-weight: 500;
         }
 
-        .card-footer {
+        .card-meta-row {
             display: flex;
             align-items: center;
-            margin-top: auto;
-            gap: 12px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
-        .pill-category {
-            background: rgba(245, 158, 11, 0.15);
-            color: #F59E0B;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 6px 14px;
-            border-radius: 99px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-        
-        .card-age {
-            font-size: 13px;
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
             font-weight: 700;
-            color: rgba(255,255,255,0.5);
-            flex-grow: 1;
+            color: rgba(255, 255, 255, 0.5);
         }
 
-        .heart-icon {
-            color: #F59E0B;
-            font-size: 18px;
-            opacity: 0.8;
-        }
+        .meta-icon { color: #F59E0B; }
 
-        .btn-pivot-orange {
-            background: linear-gradient(90deg, #EA580C 0%, #FB923C 100%);
+        .btn-pivot-premium {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
             color: white;
             border: none;
-            padding: 14px 20px;
-            border-radius: 18px;
+            padding: 16px;
+            border-radius: 20px;
             font-weight: 900;
             font-size: 14px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
             cursor: pointer;
             width: 100%;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
         }
     </style>
 
-    <div class="view scroll-y now-in-family-view">
-        <header class="header-compact" style="background:transparent; border:none; z-index:100; padding: 20px 25px; display:flex; align-items:center;">
-            <button onclick="setView('home')" style="background:transparent; color:white; border:none; display:flex; align-items:center; gap:8px; cursor:pointer; padding:0;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <div class="view scroll-y now-in-family-view" style="z-index: 9999;">
+        <header class="header-compact" style="background:transparent; padding: 25px 25px; display:flex; align-items:center;">
+            <button onclick="setView('home')" style="background:rgba(255,255,255,0.1); color:white; border:none; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m15 18-6-6 6-6"/>
                 </svg>
-                <span style="font-weight:800; font-size:12px; letter-spacing:1px; text-transform:uppercase;">ATRÁS</span>
             </button>
+            <div style="margin-left:15px;">
+                <span style="font-weight:900; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#F59E0B;">${context.momentLabel}</span>
+            </div>
         </header>
 
-        <div class="moment-header">
-            <span class="moment-tag">${context.momentLabel}</span>
-            <h1 style="font-size:32px; font-weight:900; font-family:'Outfit', sans-serif; margin:0;">Ahora en Familia</h1>
-            <p style="color:rgba(255,255,255,0.5); font-size:16px; margin-top:10px;">Dos propuestas especiales para hoy.</p>
+        <div class="moment-header" style="margin-top:-10px;">
+            <h1 style="font-size:36px; font-weight:900; font-family:'Outfit', sans-serif; margin:0; line-height:1.1;">Ahora en Familia</h1>
+            <p style="color:rgba(255,255,255,0.6); font-size:17px; margin-top:10px; font-weight:500;">Propuestas personalizadas según vuestro momento.</p>
         </div>
 
-        <div class="cards-container">
-            ${ideas.map(idea => `
-                <div class="pivot-card ${idea.type === 'Cuento' ? 'featured' : ''}">
-                    <h2 class="card-title">${idea.title}</h2>
-                    
-                    <div class="card-image-wrapper">
-                        <img src="${idea.image}" class="card-image" alt="${idea.title}" onerror="this.src='https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=800'">
+        <div id="tour-ideas-container" class="cards-container">
+            ${ideas.map((idea, index) => `
+                <div class="pivot-card">
+                    <div class="card-header-image">
+                        <img src="${idea.image}" class="card-image" alt="${idea.title}">
+                        <div class="card-overlay"></div>
+                        <span class="pill-type">${idea.type}</span>
                     </div>
                     
-                    <p class="card-desc">${idea.desc}</p>
-                    
-                    ${idea.type === 'Cuento' ? `
-                        <button class="btn-pivot-orange" onclick="startStoryInvention('${idea.id}')">INVENTAR CUENTO</button>
-                    ` : ''}
-
-                    ${idea.type !== 'Cuento' ? `
-                        <div class="card-footer">
-                            <span class="pill-category">${idea.category}</span>
-                            <span class="card-age">${idea.min_age}-${idea.max_age} años</span>
-                            <div class="heart-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    <div class="card-body">
+                        <h2 class="card-title">${idea.title}</h2>
+                        <p class="card-desc">${idea.desc}</p>
+                        
+                        <div class="card-meta-row">
+                            <div class="meta-item">
+                                <span class="meta-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                </span>
+                                ${idea.category}
                             </div>
                         </div>
-                    ` : ''}
+
+                        ${idea.type === 'Cuento' ? `
+                            <button id="${index === 0 ? 'tour-create-story-btn' : ''}" class="btn-pivot-premium" onclick="startStoryInvention('${idea.id}')">Crear Cuento</button>
+                        ` : ''}
+                    </div>
                 </div>
             `).join('')}
         </div>
@@ -184,10 +201,24 @@ function renderNowInFamily(container) {
     `;
 }
 
-window.startStoryInvention = (ideaId) => {
-    const idea = IDEAS_DB.ACTIVITIES.find(a => a.id === ideaId);
+export function startStoryInvention(ideaId) {
+    console.log("Iniciando invención de cuento para ID:", ideaId);
+
+    // Buscar la idea en la base de datos o en el caché de la IA
+    let idea = IDEAS_DB.ACTIVITIES.find(a => a.id === ideaId);
+    if (!idea && state.cachedIdeas) {
+        idea = state.cachedIdeas.find(i => i.id === ideaId);
+    }
+
+    // Si no se encuentra, creamos un objeto mínimo
+    if (!idea) idea = { title: 'vuestra aventura', id: ideaId };
+
     state.currentStorySource = idea;
-    // We navigate to the reader for now, but we are ready to insert the 'Invention' steps
     state.view = 'story_creator';
-    render();
-};
+
+    if (window.render) window.render();
+}
+
+window.renderNowInFamily = renderNowInFamily;
+window.startStoryInvention = startStoryInvention;
+
