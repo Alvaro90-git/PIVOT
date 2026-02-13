@@ -25,8 +25,9 @@ export function renderStoryCreator(container) {
             background: #0F172A;
             color: #F8FAFC;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            padding-bottom: 120px; /* Space for the button and nav */
+            min-height: 100dvh; /* Mobile height safety */
+            padding-bottom: 180px; /* Increased safety margin for scrolling */
+            overflow-y: auto;
         }
         .header-section {
             padding: 40px 25px 20px;
