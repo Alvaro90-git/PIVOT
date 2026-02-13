@@ -345,7 +345,7 @@ async function callOpenAI(userQuery) {
         return `- ${c.name} (${c.age} años): Radar [${radarStr}].`;
     }).join('\n');
 
-    const parentContext = test ? `- Estilo PIVOT: ${test.style}. Fortaleza: ${test.strengths}. Riesgo: ${test.risks}.` : "";
+    const parentContext = test ? `- Estilo PIVOT: ${test.style}. Fortaleza: ${test.strength}. Riesgo: ${test.risk}.` : "";
 
     // Libros para coherencia y conocimiento experto
     const booksFormatted = RESOURCES_DB.filter(r => r.type === 'Libro').map(b => `- "${b.title}" (${b.author}): ${b.why}`).join('\n');
@@ -400,9 +400,12 @@ PROTOCOLO DE RESPUESTA:
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorData = await response.json().catch(() => ({}));
+            console.error("OpenAI error details:", errorData);
+
+            if (response.status === 401) return "<b>Error de Clave:</b> La clave de OpenAI parece haber sido invalidada o es incorrecta. Si has hecho el repositorio público, GitHub la habrá revocado automáticamente por seguridad.";
             if (response.status === 429) return "<b>Sin Saldo:</b> OpenAI indica que no hay saldo en la cuenta API.";
-            throw new Error("Error API");
+            return `<b>Error (${response.status}):</b> El Mentor no ha podido responder debido a un problema técnico con la conexión de IA.`;
         }
 
         const data = await response.json();
