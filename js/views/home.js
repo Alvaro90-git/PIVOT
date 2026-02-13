@@ -65,6 +65,27 @@ export function renderHome(container) {
             0%, 100% { border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
             50% { border-color: rgba(245, 158, 11, 0.8); box-shadow: 0 4px 25px rgba(245, 158, 11, 0.4); }
         }
+        @keyframes pulse-help {
+            0% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 15px 5px rgba(245, 158, 11, 0.2); }
+            100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
+        .help-icon-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #F59E0B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #F59E0B;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            animation: pulse-help 2s infinite;
+            z-index: 100;
+        }
     </style>
 
     <div style="height:100vh; display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden;">
@@ -129,7 +150,10 @@ export function renderHome(container) {
                 </div>
 
                 <!-- 2. SPIRALS (Middle) - Removed broad onclick to prevent accidental navigation -->
-                <div class="spirals-wrapper">
+                <div class="spirals-wrapper" style="position:relative;">
+                   <!-- HELP BUTTON -->
+                   <div class="help-icon-btn" onclick="showMetricsHelp()" style="position:absolute; right:-10px; top:-5px;">?</div>
+                   
                    ${Object.keys(RADAR_AREAS).map(key => {
     const val = child.radar[key] || 1;
     const numVal = typeof val === 'string' ? parseFloat(val) : val;
@@ -233,3 +257,48 @@ export function renderHome(container) {
 `;
 }
 window.renderHome = renderHome;
+
+window.showMetricsHelp = function () {
+  const helpContent = `
+        <div style="text-align:left; font-family:'Plus Jakarta Sans', sans-serif;">
+            <p style="margin-bottom:15px; line-height:1.5;">PIVOT utiliza <b>hitos neurobiológicos</b> y de desarrollo para marcar el camino de tus hijos:</p>
+            
+            <div style="margin-bottom:15px;">
+                <b style="color:#10B981;">● Indicador Verde (META):</b>
+                <p style="margin:5px 0 0 15px; font-size:13px; color:rgba(255,255,255,0.7);">Es el objetivo <b>óptimo</b> para la edad actual de tu hijo/a. Se calcula analizando la madurez de su corteza prefrontal y capacidades psicológicas estándar.</p>
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <b style="color:#F59E0B;">● Barra de Color (ESTADO):</b>
+                <p style="margin:5px 0 0 15px; font-size:13px; color:rgba(255,255,255,0.7);">Representa el nivel actual. 
+                    <br><span style="color:#EF4444;">Rojo:</span> Requiere atención inmediata.
+                    <br><span style="color:#F59E0B;">Naranja:</span> En proceso de mejora.
+                    <br><span style="color:#10B981;">Verde:</span> Objetivo alcanzado para su edad.
+                </p>
+            </div>
+
+            <p style="font-size:12px; font-style:italic; opacity:0.6; margin-top:10px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                *Los objetivos cambian automáticamente a medida que cumplen años, ajustándose a su nuevo potencial biológico.
+            </p>
+        </div>
+    `;
+
+  // Simple Alert for now, but beautifully formatted
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 10000; padding: 25px;
+    `;
+  modal.onclick = () => modal.remove();
+
+  modal.innerHTML = `
+        <div style="background:#1E293B; border-radius:30px; border:1px solid rgba(255,255,255,0.1); padding:30px; max-width:400px; width:100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" onclick="event.stopPropagation()">
+            <h3 style="margin:0 0 20px; font-family:'Outfit'; color:#F59E0B; font-size:20px; text-align:center;">¿Cómo leer las métricas?</h3>
+            ${helpContent}
+            <button onclick="this.parentElement.parentElement.remove()" style="margin-top:25px; width:100%; background:#F59E0B; color:white; border:none; padding:15px; border-radius:15px; font-weight:900; cursor:pointer;">ENTENDIDO</button>
+        </div>
+    `;
+  document.body.appendChild(modal);
+};
