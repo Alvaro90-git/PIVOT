@@ -93,13 +93,6 @@
     </div>
 
     <script>
-        // Si estamos en localhost, intentamos cargar normal
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            document.getElementById('critical-error').style.display = 'none';
-        } else {
-            document.getElementById('critical-error').style.display = 'flex';
-        }
-
         // Carga de la App
         const script = document.createElement('script');
         script.type = 'module';
