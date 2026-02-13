@@ -49,21 +49,23 @@ export function renderOnboarding(container) {
     container.innerHTML = `
     <style>
         .ob-full {
-            height: 100vh;
+            min-height: 100dvh; /* Use dynamic viewport height for mobile bars */
             width: 100vw;
             background: #020617;
-            position: fixed;
-            top: 0; left: 0;
-            overflow: hidden;
+            position: relative;
+            overflow-y: auto; /* Safety net: scroll if screen is tiny */
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: white;
             z-index: 100000;
+            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom); /* iOS notch safety */
+            box-sizing: border-box;
         }
 
         .ob-gradient-bg {
-            position: absolute;
+            position: fixed; /* Keep it fixed behind everything */
             inset: 0;
             background: radial-gradient(circle at 50% -20%, #1e1b4b 0%, #020617 80%);
             z-index: 1;
@@ -71,9 +73,9 @@ export function renderOnboarding(container) {
 
         /* Fixed Brand Logo */
         .ob-brand-logo {
-            position: absolute;
-            top: 40px;
-            left: 30px;
+            position: relative;
+            padding-top: 20px;
+            margin-bottom: 20px;
             z-index: 100;
             font-family: 'Outfit', sans-serif;
             font-weight: 900;
@@ -81,39 +83,41 @@ export function renderOnboarding(container) {
             letter-spacing: 2px;
             color: white;
             pointer-events: none;
+            text-align: left;
         }
 
         /* Centered Content Container */
         .ob-main-wrapper {
             position: relative;
             z-index: 10;
-            height: 100%;
             width: 100%;
             max-width: 450px;
             margin: 0 auto;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 60px 20px 30px; /* Reduced top padding */
-            box-sizing: border-box;
+            justify-content: center; /* Center content vertically if space permits */
+            padding-bottom: 30px;
         }
 
-        /* Visual Area - FIXED HEIGHT TO PREVENT SHIFT */
+        /* Visual Area - FLEXIBLE */
         .ob-visual-area {
-            height: 30vh; /* Reduced from 35vh */
+            flex: 0 1 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            margin-bottom: 25px; /* Increased from 10px to give space to subtitle */
+            margin-bottom: 30px;
+            min-height: 200px;
         }
 
         .ob-mockup {
-            width: 110px; /* Scaled down slightly */
-            height: 220px;
+            width: 100px;
+            height: 200px;
             background: rgba(15, 23, 42, 0.6);
-            border-radius: 24px;
-            border: 5px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            border-radius: 20px;
+            border: 4px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,97 +127,97 @@ export function renderOnboarding(container) {
 
         .ob-float-icon {
             position: absolute;
-            top: 10px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
+            top: 0;
+            right: 15%;
+            width: 50px;
+            height: 50px;
             background: #ffffff;
-            border-radius: 18px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            font-size: 24px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             z-index: 20;
         }
 
-        /* Text Area - FIXED HEIGHT TO PREVENT SHIFT */
+        /* Text Area - FLEXIBLE */
         .ob-txt-area {
-            height: 160px; /* Reduced from 200px */
+            flex: 0 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            overflow: hidden;
+            margin-bottom: 40px;
         }
 
         .ob-subtitle {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 800;
             letter-spacing: 2px;
             color: var(--slide-color);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             text-transform: uppercase;
         }
 
         .ob-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 24px; /* Reduced from 28px */
+            font-size: 22px;
             font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 12px;
+            line-height: 1.2;
+            margin: 0 0 15px;
             letter-spacing: -0.5px;
         }
 
         .ob-desc {
-            font-size: 14px; /* Reduced from 15px */
-            line-height: 1.5;
+            font-size: 14px;
+            line-height: 1.6;
             color: #94A3B8;
             font-weight: 500;
-            max-width: 300px;
+            max-width: 280px;
+            margin: 0;
         }
 
-        /* Fixed Bottom Area - ANCHORED */
-        .ob-bottom-fixed {
+        /* Bottom Area */
+        .ob-bottom-area {
             margin-top: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
-            padding-bottom: 5px;
         }
 
         .ob-dots {
             display: flex;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .ob-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
             background: rgba(255,255,255,0.1);
             transition: all 0.4s ease;
         }
         .ob-dot.active {
-            width: 25px;
+            width: 20px;
             background: #F59E0B;
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
         }
 
         .ob-btn {
             width: 100%;
-            height: 55px; /* Reduced height from 65px */
+            height: 54px;
             background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%);
             color: white;
             border: none;
-            border-radius: 18px;
-            font-size: 16px;
+            border-radius: 16px;
+            font-size: 15px;
             font-weight: 900;
             font-family: 'Outfit', sans-serif;
             letter-spacing: 0.5px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.4);
+            box-shadow: 0 10px 30px rgba(217, 119, 6, 0.3);
             text-transform: uppercase;
         }
 
