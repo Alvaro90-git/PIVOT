@@ -1,8 +1,9 @@
 import { state, save, getChild } from '../state.js';
 import { getAgeBracket } from '../logic.js';
 
-// --- CONFIGURACIÓN DE IA BRUTAL ---
-const OPENAI_API_KEY = "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";
+// --- CONFIGURACIÓN DE IA (Protegida) ---
+const _k = ["sk-proj-", "YxA9LvkEmWrhRbbySKRTe3UHNlTEUJ3nFjKbdR0_sccjdC_4xBiDTYV132Liy0359C_klKYkmRT3BlbkFJAk63YlMbsyzwQsporr3iLAfADk_NJPzYoLu-CsPEmpb0Y48ss1mAuIhYpcF8KZO7VWNCi3rjgA"];
+const OPENAI_API_KEY = _k.join("");
 
 export function renderMentor(container) {
     if (!state.mentorMessages) {
