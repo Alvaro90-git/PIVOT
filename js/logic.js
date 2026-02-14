@@ -215,40 +215,52 @@ export function processHuella(childId, data) {
     const child = state.children.find(c => c.id === childId);
     if (!child) return;
 
-    // Update Parent Radar
+    // 1. UPDATE PARENT RADAR
     const pRadar = state.parentProfile.radar;
-    const learningRate = 0.15; // 15% weight for each entry (faster growth for engagement)
-    const decay = 1 - learningRate;
+    const pLR = 0.12; // Learning rate
+    const pDecay = 1 - pLR;
 
-    pRadar.serenidad = (pRadar.serenidad * decay) + (data.calma * learningRate);
-    pRadar.firmeza_afectuosa = (pRadar.firmeza_afectuosa * decay) + (data.firmeza * learningRate);
-    pRadar.conexion = (pRadar.conexion * decay) + (data.conexion * learningRate);
+    pRadar.serenidad = (pRadar.serenidad * pDecay) + (data.parent.calma * pLR);
+    pRadar.firmeza_afectuosa = (pRadar.firmeza_afectuosa * pDecay) + (data.parent.firmeza * pLR);
+    pRadar.conexion = (pRadar.conexion * pDecay) + (data.parent.conexion * pLR);
 
-    // Impact on Child Radar (Example)
-    if (data.type === 'acierto') {
+    // 2. UPDATE CHILD RADAR (BASED ON EVALUATION)
+    const cLR = 0.10; // Learning rate for child
+    const cDecay = 1 - cLR;
+
+    // Impact on Autocontrol (based on Intensity)
+    child.radar.autocontrol = (child.radar.autocontrol * cDecay) + (data.child.intensity * cLR);
+
+    // Impact on Respeto (based on Cooperation)
+    child.radar.respeto = (child.radar.respeto * cDecay) + (data.child.cooperation * cLR);
+
+    // Specific Situation Bonus
+    if (data.situationId === 'acierto') {
         Object.keys(child.radar).forEach(k => {
-            child.radar[k] = Math.min(5, child.radar[k] + 0.1);
+            child.radar[k] = Math.min(5, child.radar[k] + 0.05);
         });
-    } else if (data.type === 'conflicto' && data.calma >= 4) {
-        // Successful conflict management boosts self-control
-        child.radar.autocontrol = Math.min(5, child.radar.autocontrol + 0.15);
     }
 
-    // Save history
+    // 3. LOG HISTORY
     if (!state.parentProfile.huellaHistory) state.parentProfile.huellaHistory = [];
     state.parentProfile.huellaHistory.push({
         timestamp: new Date().toISOString(),
         childId,
         childName: child.name,
-        type: data.type,
-        scores: data,
+        situationId: data.situationId,
+        data: data,
         insight: getHuellaInsight(data)
     });
 }
 
 function getHuellaInsight(data) {
-    if (data.calma >= 4 && data.firmeza >= 4) return "Equilibrio perfecto: Autoridad con Ternura.";
-    if (data.calma < 3) return "Recuerda: Tu calma es el ancla de su tormenta.";
-    if (data.firmeza < 3) return "La firmeza es amor: le da seguridad saber el límite.";
-    return "Cada experiencia es un peldaño en vuestro crecimiento.";
+    const p = data.parent;
+    const c = data.child;
+
+    if (p.calma >= 4 && c.intensity >= 4) return "Sincronía perfecta. Habéis gestionado la emoción con madurez.";
+    if (p.calma >= 4 && c.intensity < 3) return "Gran resiliencia: Tu calma ha sido el ancla en su tormenta.";
+    if (p.firmeza >= 4 && c.cooperation < 3) return "Firmeza serena: Has mantenido el límite pese a su resistencia.";
+    if (p.conexion >= 4) return "El vínculo es lo primero. Has priorizado la relación.";
+
+    return "Cada paso cuenta en vuestra maestría familiar.";
 }

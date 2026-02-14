@@ -118,21 +118,29 @@ export function getParentRadarSVG(parent) {
    const angleStep = 360 / keys.length;
 
    let polyPoints = [];
+   let targetPoints = [];
    let axesSvg = '';
 
    keys.forEach((key, i) => {
       const angle = i * angleStep - 90;
       const val = parent.radar[key] || 1;
+      const target = 4.5; // Mastery target for parents
+
       const rVal = (val / 5) * radius;
+      const rTarget = (target / 5) * radius;
 
       const xVal = c + rVal * Math.cos(toRad(angle));
       const yVal = c + rVal * Math.sin(toRad(angle));
       polyPoints.push(`${xVal},${yVal}`);
 
+      const xTarget = c + rTarget * Math.cos(toRad(angle));
+      const yTarget = c + rTarget * Math.sin(toRad(angle));
+      targetPoints.push(`${xTarget},${yTarget}`);
+
       // Axis
       const xOuter = c + radius * Math.cos(toRad(angle));
       const yOuter = c + radius * Math.sin(toRad(angle));
-      axesSvg += `<line x1="${c}" y1="${c}" x2="${xOuter}" y2="${yOuter}" stroke="rgba(245, 158, 11, 0.1)" stroke-width="1" />`;
+      axesSvg += `<line x1="${c}" y1="${c}" x2="${xOuter}" y2="${yOuter}" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" />`;
 
       // Label
       const labelR = radius + 25;
@@ -140,16 +148,22 @@ export function getParentRadarSVG(parent) {
       const yLabel = c + labelR * Math.sin(toRad(angle));
 
       axesSvg += `
-      <text x="${xLabel}" y="${yLabel}" fill="rgba(255,255,255,0.8)" font-size="10" font-weight="900" text-anchor="middle" dominant-baseline="middle" style="text-transform:uppercase; letter-spacing:0.5px;">
+      <text x="${xLabel}" y="${yLabel}" fill="rgba(215,215,225,0.7)" font-size="9" font-weight="900" text-anchor="middle" dominant-baseline="middle" style="text-transform:uppercase; letter-spacing:0.5px;">
          ${areas[key]}
       </text>`;
    });
 
    return `
-   <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="margin: 0 auto; display: block; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.15));">
+   <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="margin: 0 auto; display: block;">
       ${[1, 2, 3, 4, 5].map(l => `<circle cx="${c}" cy="${c}" r="${(l / 5) * radius}" fill="none" stroke="rgba(255,255,255,0.05)" />`).join('')}
       ${axesSvg}
+      
+      <!-- TARGET POLYGON (MAESTRÍA) -->
+      <path d="M ${targetPoints.join(' L ')} Z" fill="rgba(34, 211, 238, 0.05)" stroke="rgba(34, 211, 238, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
+      
+      <!-- CURRENT POLYGON -->
       <path d="M ${polyPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3" stroke-linejoin="round" />
+      
       ${keys.map((key, i) => {
       const angle = i * angleStep - 90;
       const val = parent.radar[key] || 1;
@@ -158,6 +172,14 @@ export function getParentRadarSVG(parent) {
       const y = c + rVal * Math.sin(toRad(angle));
       return `<circle cx="${x}" cy="${y}" r="4.5" fill="#F59E0B" stroke="#0F172A" stroke-width="2" />`;
    }).join('')}
+
+      <!-- LEGEND -->
+      <g transform="translate(${c - 60}, ${size - 10})">
+         <circle cx="0" cy="0" r="3" fill="#F59E0B" />
+         <text x="8" y="4" fill="rgba(255,255,255,0.4)" font-size="9" font-weight="700">ACTUAL</text>
+         <circle cx="65" cy="0" r="3" fill="none" stroke="#22d3ee" stroke-width="1" />
+         <text x="73" y="4" fill="rgba(255,255,255,0.4)" font-size="9" font-weight="700">META</text>
+      </g>
    </svg>
    `;
 }
