@@ -250,8 +250,8 @@ export function renderHome(container) {
 
   <div class="pivot-anchor-container">
     <div id="tour-pivot-sos" class="pivot-anchor-btn" onclick="setView('sos_child_select')">
-      <!-- PIVOT SOS Button -->
-      <h2 style="font-size:12px;">PIVOT<br>SOS</h2>
+      <!-- PIVOT SOS Button renamed to HUELLA -->
+      <h2 style="font-size:12px;">PIVOT<br>HUELLA</h2>
     </div>
   </div>
 `;

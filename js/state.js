@@ -1,4 +1,4 @@
-const VERSION = '1.6';
+const VERSION = '1.7';
 let savedStorage = null;
 try {
     savedStorage = JSON.parse(localStorage.getItem('pivot_state'));
@@ -12,7 +12,15 @@ const DEFAULT_STATE = {
     parentProfile: {
         name: 'Papá/Mamá',
         temperament: 'Calmado',
-        parentTestResult: null // style, strengths, risks, lever
+        parentTestResult: null, // style, strengths, risks, lever
+        radar: {
+            serenidad: 3.0,
+            firmeza_afectuosa: 3.0,
+            conexion: 3.0,
+            reparacion: 3.0,
+            ejemplo: 3.0
+        },
+        huellaHistory: []
     },
     children: [
         {
@@ -20,7 +28,6 @@ const DEFAULT_STATE = {
             name: 'Alvaro',
             age: 7,
             temperament: 'Intenso',
-            // Ensure all radar areas are initialized
             radar: {
                 autocontrol: 3,
                 respeto: 3,
@@ -40,7 +47,9 @@ const DEFAULT_STATE = {
     selectedTipId: null,
     cachedIdeas: null,
     lastIdeasUpdate: 0,
-    hasSeenTour: false
+    hasSeenTour: false,
+    mentorMessages: [],
+    mentorPreferences: { likesBooks: true, lastTopics: [] }
 };
 
 // Logic to load state or reset if version mismatch

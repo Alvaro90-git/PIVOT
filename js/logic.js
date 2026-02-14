@@ -211,3 +211,44 @@ export function getPersonalizedFeedbackPhrase(childName, situationId, score) {
         return `<b>${data.bad}</b> Manten la calma; eres el mentor experto que <b>${childName}</b> necesita para crecer en virtud.`;
     }
 }
+export function processHuella(childId, data) {
+    const child = state.children.find(c => c.id === childId);
+    if (!child) return;
+
+    // Update Parent Radar
+    const pRadar = state.parentProfile.radar;
+    const learningRate = 0.15; // 15% weight for each entry (faster growth for engagement)
+    const decay = 1 - learningRate;
+
+    pRadar.serenidad = (pRadar.serenidad * decay) + (data.calma * learningRate);
+    pRadar.firmeza_afectuosa = (pRadar.firmeza_afectuosa * decay) + (data.firmeza * learningRate);
+    pRadar.conexion = (pRadar.conexion * decay) + (data.conexion * learningRate);
+
+    // Impact on Child Radar (Example)
+    if (data.type === 'acierto') {
+        Object.keys(child.radar).forEach(k => {
+            child.radar[k] = Math.min(5, child.radar[k] + 0.1);
+        });
+    } else if (data.type === 'conflicto' && data.calma >= 4) {
+        // Successful conflict management boosts self-control
+        child.radar.autocontrol = Math.min(5, child.radar.autocontrol + 0.15);
+    }
+
+    // Save history
+    if (!state.parentProfile.huellaHistory) state.parentProfile.huellaHistory = [];
+    state.parentProfile.huellaHistory.push({
+        timestamp: new Date().toISOString(),
+        childId,
+        childName: child.name,
+        type: data.type,
+        scores: data,
+        insight: getHuellaInsight(data)
+    });
+}
+
+function getHuellaInsight(data) {
+    if (data.calma >= 4 && data.firmeza >= 4) return "Equilibrio perfecto: Autoridad con Ternura.";
+    if (data.calma < 3) return "Recuerda: Tu calma es el ancla de su tormenta.";
+    if (data.firmeza < 3) return "La firmeza es amor: le da seguridad saber el límite.";
+    return "Cada experiencia es un peldaño en vuestro crecimiento.";
+}

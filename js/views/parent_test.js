@@ -140,6 +140,15 @@ export function calculateTestResult() {
         scores: testAnswers
     };
 
+    // Seed Parent Radar for Spider Chart
+    state.parentProfile.radar = {
+        serenidad: Math.max(1, 5 - ((testAnswers['reactividad'] || 0) / 3)),
+        firmeza_afectuosa: ((testAnswers['firmeza'] || 0) / 3 + (testAnswers['estilo'] || 0) / 3) / 2,
+        conexion: (testAnswers['estilo'] || 0) / 3,
+        reparacion: (testAnswers['reparacion'] || 0) / 3,
+        ejemplo: Math.max(1, 5 - ((testAnswers['control'] || 0) / 3))
+    };
+
     state.view = 'parent_test_result';
     if (window.render) window.render();
 }

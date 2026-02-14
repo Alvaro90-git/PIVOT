@@ -48,7 +48,8 @@ import { renderOnboarding } from './views/onboarding.js';
 import { renderLogin, authenticate } from './views/login.js';
 import { renderHome } from './views/home.js';
 import { renderSelector } from './views/selector.js';
-import { renderSosChildSelect } from './views/sos_child_select.js';
+import { renderHuellaChildSelect } from './views/sos_child_select.js';
+import { renderHuellaRegistration } from './views/huella_registration.js';
 import { renderCard } from './views/card.js';
 import { renderFeedback, viewChallenge } from './views/challenges.js';
 import { renderFaro } from './views/faro.js';
@@ -63,8 +64,7 @@ import { renderBitacora } from './views/bitacora.js';
 import { renderNowInFamily } from './views/now_in_family.js';
 import { renderStoryCreator } from './views/story_creator.js';
 
-// Borrar historial del Mentor al recargar (Efímero)
-state.mentorMessages = null;
+// Mentor state is managed in the view
 
 export function renderNav(container) {
   const icons = {
@@ -243,7 +243,8 @@ export function render() {
   // RENDER VIEWS
   if (state.view === 'home') renderHome(app);
   else if (state.view === 'selector') renderSelector(app);
-  else if (state.view === 'sos_child_select') renderSosChildSelect(app);
+  else if (state.view === 'sos_child_select' || state.view === 'huella_child_select') renderHuellaChildSelect(app);
+  else if (state.view === 'huella_registration') renderHuellaRegistration(app);
   else if (state.view === 'card') renderCard(app, state.selectedSituation);
   else if (state.view === 'feedback') renderFeedback(app);
   else if (state.view === 'faro' || state.view === 'mastery') renderFaro(app);

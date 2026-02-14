@@ -97,7 +97,7 @@ export function renderYo(container) {
 
         <!-- 2) Card Principal -->
         ${!testDone ? `
-            <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); margin: 0 35px 35px; padding: 35px 25px; border-radius: 32px; border: 1px solid rgba(255,255,255,0.08); text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
+            <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); margin: 0 35px 35px; padding: 35px 25px; border-radius: 32px; border: 1px solid rgba(245, 158, 11, 0.08); text-align: center; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
                 <div style="font-size: 44px; margin-bottom: 18px;">🧠</div>
                 <h2 style="color: white; font-size: 20px; font-weight: 900; margin: 0 0 10px; font-family: 'Outfit', sans-serif;">Test de carácter (2 min)</h2>
                 <p style="color: rgba(255,255,255,0.5); font-size: 13px; line-height: 1.5; margin: 0 0 25px; max-width: 220px;">
@@ -106,17 +106,19 @@ export function renderYo(container) {
                 <button onclick="setView('parent_test')" style="width: 100%; max-width: 200px; height: 54px; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%); color: white; border: none; border-radius: 27px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 8px 15px rgba(245, 158, 11, 0.2); font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;">HACER TEST</button>
             </div>
         ` : `
-            <div style="background: #1E293B; margin: 0 30px 35px; padding: 30px 20px; border-radius: 32px; border: 1px solid #F59E0B44; text-align: center; border-left: 6px solid #F59E0B;">
-                <h2 style="color: white; font-size: 19px; font-weight: 900; margin: 0 0 15px; font-family: 'Outfit', sans-serif;">${parent.parentTestResult.title}</h2>
-                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:25px; text-align: left; padding: 0 10px;">
-                    <div style="display:flex; align-items:flex-start; gap:10px;">
-                        <span style="color:#10B981; font-weight:900;">✓</span>
-                        <div style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.4;"><span style="color:white; font-weight:800;">Fortaleza:</span> ${parent.parentTestResult.strength}</div>
-                    </div>
+            <div style="background: #1E293B; margin: 0 20px 35px; padding: 25px 15px; border-radius: 32px; border: 1px solid rgba(245, 158, 11, 0.15); text-align: center; position:relative;">
+                <span style="position:absolute; top:20px; right:25px; color:#F59E0B; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:1px;">PERFIL DE CRECIMIENTO</span>
+                
+                <h2 style="color: white; font-size: 19px; font-weight: 900; margin: 0 0 5px; font-family: 'Outfit', sans-serif; text-align:left; padding-left:10px;">${parent.parentTestResult.title}</h2>
+                <p style="color:rgba(255,255,255,0.4); font-size:12px; text-align:left; padding-left:10px; margin-bottom:20px;">Pulsa en 'Huella' para evolucionar estas áreas.</p>
+
+                <!-- SPIDER RADAR CHART -->
+                <div style="margin: 0 auto; width: 100%; max-width: 300px;">
+                    ${window.getParentRadarSVG ? window.getParentRadarSVG(parent) : ''}
                 </div>
-                <button onclick="setView('parent_test_result')" style="width: 100%; max-width: 220px; height: 50px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 25px; font-weight: 800; font-size: 14px; cursor: pointer; margin-bottom: 20px;">Ver perfil completo</button>
-                <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-                    <button onclick="setView('parent_test')" style="background: none; border: none; color: #F59E0B; font-weight: 800; font-size: 13px; cursor: pointer; text-decoration: underline;">Realizar de nuevo el test</button>
+
+                <div style="margin-top:20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+                    <button onclick="setView('parent_test')" style="background: none; border: none; color: #F59E0B; font-weight: 800; font-size: 12px; cursor: pointer; text-decoration: underline;">Recalibrar perfil (Test)</button>
                 </div>
             </div>
         `}

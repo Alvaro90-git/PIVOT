@@ -98,3 +98,68 @@ export function getRadarSVG(child) {
 }
 
 window.getRadarSVG = getRadarSVG;
+
+export function getParentRadarSVG(parent) {
+   if (!parent || !parent.radar) return '';
+   const toRad = (deg) => (deg * Math.PI) / 180;
+
+   const size = 300;
+   const c = size / 2;
+   const radius = 85;
+
+   const areas = {
+      serenidad: 'Serenidad',
+      firmeza_afectuosa: 'Firmeza',
+      conexion: 'Conexión',
+      reparacion: 'Reparación',
+      ejemplo: 'Ejemplo'
+   };
+   const keys = Object.keys(areas);
+   const angleStep = 360 / keys.length;
+
+   let polyPoints = [];
+   let axesSvg = '';
+
+   keys.forEach((key, i) => {
+      const angle = i * angleStep - 90;
+      const val = parent.radar[key] || 1;
+      const rVal = (val / 5) * radius;
+
+      const xVal = c + rVal * Math.cos(toRad(angle));
+      const yVal = c + rVal * Math.sin(toRad(angle));
+      polyPoints.push(`${xVal},${yVal}`);
+
+      // Axis
+      const xOuter = c + radius * Math.cos(toRad(angle));
+      const yOuter = c + radius * Math.sin(toRad(angle));
+      axesSvg += `<line x1="${c}" y1="${c}" x2="${xOuter}" y2="${yOuter}" stroke="rgba(245, 158, 11, 0.1)" stroke-width="1" />`;
+
+      // Label
+      const labelR = radius + 25;
+      const xLabel = c + labelR * Math.cos(toRad(angle));
+      const yLabel = c + labelR * Math.sin(toRad(angle));
+
+      axesSvg += `
+      <text x="${xLabel}" y="${yLabel}" fill="rgba(255,255,255,0.8)" font-size="10" font-weight="900" text-anchor="middle" dominant-baseline="middle" style="text-transform:uppercase; letter-spacing:0.5px;">
+         ${areas[key]}
+      </text>`;
+   });
+
+   return `
+   <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="margin: 0 auto; display: block; filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.15));">
+      ${[1, 2, 3, 4, 5].map(l => `<circle cx="${c}" cy="${c}" r="${(l / 5) * radius}" fill="none" stroke="rgba(255,255,255,0.05)" />`).join('')}
+      ${axesSvg}
+      <path d="M ${polyPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3" stroke-linejoin="round" />
+      ${keys.map((key, i) => {
+      const angle = i * angleStep - 90;
+      const val = parent.radar[key] || 1;
+      const rVal = (val / 5) * radius;
+      const x = c + rVal * Math.cos(toRad(angle));
+      const y = c + rVal * Math.sin(toRad(angle));
+      return `<circle cx="${x}" cy="${y}" r="4.5" fill="#F59E0B" stroke="#0F172A" stroke-width="2" />`;
+   }).join('')}
+   </svg>
+   `;
+}
+
+window.getParentRadarSVG = getParentRadarSVG;
