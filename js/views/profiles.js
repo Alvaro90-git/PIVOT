@@ -1,15 +1,12 @@
 import { state, save } from '../state.js';
 import { RADAR_AREAS, RADAR_INDICATORS, TEMPERAMENTS } from '../data.js';
-import { calculateAge, calculateInitialRadar } from '../logic.js';
+import { calculateAge, calculateInitialRadar, getAgeBracket } from '../logic.js';
 
-let editStep = 1;
-let editData = {
-  name: '',
-  birthDate: '',
-  gender: 'chico',
-  temperament: 'tranquilo',
-  responses: {} // areaKey: 0|1|2
-};
+/**
+ * PIVOT PROFILE WIZARD - ULTIMATE ROBUST VERSION
+ * This version uses explicit global handlers on 'window' to avoid any scoping issues
+ * and ensures state synchronization before re-rendering.
+ */
 
 export function renderProfiles(container) {
   container.innerHTML = `
@@ -19,28 +16,35 @@ export function renderProfiles(container) {
       <span class="label" style="margin:20px 0 15px; display:block;">Crecimiento de Hijos</span>
       <div style="display:flex; flex-direction:column; gap:12px;">
       ${state.children.map(c => `
-        <div class="os-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0;" onclick="startEditChild('${c.id}')">
-          <div style="display:flex; align-items:center; gap:15px;">
+        <div class="os-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0; padding:15px;">
+          <div style="display:flex; align-items:center; gap:15px; flex:1; cursor:pointer;" onclick="window.startEditChild('${c.id}')">
             <div style="width:45px; height:45px; background:linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(255,255,255,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#F59E0B; font-weight:900; font-size:18px;">${c.name[0]}</div>
             <div>
-               <h4 style="margin:0;">${c.name}</h4>
-               <p style="font-size:12px; color:var(--text-muted);">${c.birthDate ? calculateAge(c.birthDate) + ' años' : 'Edad pendiente'}</p>
+               <h4 style="margin:0; color:white;">${c.name}</h4>
+               <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:2px 0 0;">${c.birthDate ? calculateAge(c.birthDate) + ' años' : 'Edad pendiente'}</p>
             </div>
           </div>
-          <span style="color:#F59E0B; font-weight:800; font-size:11px; letter-spacing:1px;">GESTIONAR</span>
+          <div style="display:flex; align-items:center; gap:15px;">
+            <button onclick="window.startEditChild('${c.id}')" style="background:none; border:none; color:#F59E0B; font-weight:800; font-size:10px; letter-spacing:1px; cursor:pointer; padding:10px;">EDITAR</button>
+            ${state.children.length > 1 ? `
+              <button onclick="window.deleteChild('${c.id}')" style="background:rgba(244, 63, 94, 0.1); border:none; border-radius:10px; padding:10px; color:#F43F5E; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              </button>
+            ` : ''}
+          </div>
         </div>
       `).join('')}
       </div>
 
-      <button class="btn-primary" style="margin-top:25px; background:rgba(245, 158, 11, 0.05); color:#F59E0B; border:2px dashed rgba(245, 158, 11, 0.3);" onclick="startEditChild()">+ Añadir nuevo perfil</button>
+      <button class="btn-primary" style="margin-top:25px; background:rgba(245, 158, 11, 0.05); color:#F59E0B; border:2px dashed rgba(245, 158, 11, 0.3);" onclick="window.startEditChild()">+ Añadir nuevo perfil</button>
     </div>
   `;
 }
 
 export function renderEditChild(container, id) {
-  if (editStep === 1) renderStep1(container, id);
-  else if (editStep === 2) renderStep2(container, id);
-  else if (editStep === 3) renderStep3(container, id);
+  if (state.editStep === 1) renderStep1(container, id);
+  else if (state.editStep === 2) renderStep2(container, id);
+  else if (state.editStep === 3) renderStep3(container, id);
 }
 
 // STEP 1: FICHA BÁSICA
@@ -48,7 +52,7 @@ function renderStep1(container, id) {
   container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="cancelEdit()" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white;">Cancelar</button>
+                <button onclick="window.cancelEdit()" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white; cursor:pointer;">Cancelar</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
@@ -59,19 +63,19 @@ function renderStep1(container, id) {
 
             <div class="os-card" style="background:rgba(30, 41, 59, 0.5); padding:25px; border-radius:24px;">
                 <label class="label" style="display:block; margin-bottom:8px;">Nombre</label>
-                <input type="text" id="edit-name" class="input-premium" value="${editData.name}" placeholder="Ej: Alvaro" style="background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
+                <input type="text" id="edit-name" class="input-premium" value="${state.editData.name}" placeholder="Ej: Alvaro" style="background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
 
                 <label class="label" style="display:block; margin-bottom:8px;">Fecha de Nacimiento</label>
-                <input type="date" id="edit-date" class="input-premium" value="${editData.birthDate}" style="background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
+                <input type="date" id="edit-date" class="input-premium" value="${state.editData.birthDate}" style="background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.1); color:white; margin-bottom:20px;">
 
                 <label class="label" style="display:block; margin-bottom:8px;">Sexo</label>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="editData.gender='chico'; renderStep1(document.getElementById('app'), '${id || ''}')" style="flex:1; padding:15px; border-radius:15px; border:2px solid ${editData.gender === 'chico' ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${editData.gender === 'chico' ? 'rgba(245, 158, 11, 0.1)' : 'transparent'}; color:white; font-weight:700;">Chico</button>
-                    <button onclick="editData.gender='chica'; renderStep1(document.getElementById('app'), '${id || ''}')" style="flex:1; padding:15px; border-radius:15px; border:2px solid ${editData.gender === 'chica' ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${editData.gender === 'chica' ? 'rgba(245, 158, 11, 0.1)' : 'transparent'}; color:white; font-weight:700;">Chica</button>
+                    <button type="button" onclick="window.setEditGender('chico')" style="flex:1; padding:15px; border-radius:15px; border:2px solid ${state.editData.gender === 'chico' ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${state.editData.gender === 'chico' ? 'rgba(245, 158, 11, 0.1)' : 'transparent'}; color:white; font-weight:700; cursor:pointer;">Chico</button>
+                    <button type="button" onclick="window.setEditGender('chica')" style="flex:1; padding:15px; border-radius:15px; border:2px solid ${state.editData.gender === 'chica' ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${state.editData.gender === 'chica' ? 'rgba(245, 158, 11, 0.1)' : 'transparent'}; color:white; font-weight:700; cursor:pointer;">Chica</button>
                 </div>
             </div>
 
-            <button onclick="goToStep2('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B);">CONTINUAR AL TEMPERAMENTO</button>
+            <button onclick="window.goToStep2('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B); cursor:pointer;">CONTINUAR AL TEMPERAMENTO</button>
         </div>
     `;
 }
@@ -81,7 +85,7 @@ function renderStep2(container, id) {
   container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="editStep=1; renderEditChild(document.getElementById('app'), '${id || ''}')" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white;">Atrás</button>
+                <button onclick="window.goToEditStep(1)" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white; cursor:pointer;">Atrás</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
@@ -93,48 +97,48 @@ function renderStep2(container, id) {
             <div style="display:grid; grid-template-columns:1fr; gap:12px;">
                 ${Object.keys(TEMPERAMENTS).map(key => {
     const t = TEMPERAMENTS[key];
-    const isActive = editData.temperament === key;
+    const isActive = state.editData.temperament === key;
     return `
-                        <div onclick="editData.temperament='${key}'; renderStep2(document.getElementById('app'), '${id || ''}')" 
+                        <div onclick="window.setEditTemperament('${key}')" 
                              style="background:rgba(30, 41, 59, 0.5); border:2px solid ${isActive ? '#F59E0B' : 'rgba(255,255,255,0.05)'}; border-radius:24px; padding:20px; display:flex; align-items:center; gap:15px; transition:0.3s; cursor:pointer;">
-                            <div style="width:50px; height:50px; background:${isActive ? '#F59E0B' : 'rgba(255,255,255,0.05)'}; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:24px;">${t.icon}</div>
-                            <div style="flex:1;">
-                                <div style="color:white; font-weight:800; font-size:14px;">${t.name}</div>
-                                <div style="color:rgba(255,255,255,0.5); font-size:12px; line-height:1.3;">${t.desc}</div>
+                            <div style="width:50px; height:50px; background:${isActive ? '#F59E0B' : 'rgba(255,255,255,0.05)'}; border-radius:15px; display:flex; align-items:center; justify-content:center; font-size:24px; pointer-events:none;">${t.icon}</div>
+                            <div style="flex:1; pointer-events:none;">
+                                <div style="color:white; font-weight:800; font-size:14px; pointer-events:none;">${t.name}</div>
+                                <div style="color:rgba(255,255,255,0.5); font-size:12px; line-height:1.3; pointer-events:none;">${t.desc}</div>
                             </div>
                         </div>
                     `;
   }).join('')}
             </div>
 
-            <button onclick="goToStep3('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B);">EVALUAR HITOS DE MADUREZ</button>
+            <button onclick="window.goToStep3('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B); cursor:pointer;">EVALUAR HITOS DE MADUREZ</button>
         </div>
     `;
 }
 
 // STEP 3: HITOS DE MADUREZ
 function renderStep3(container, id) {
-  const age = calculateAge(editData.birthDate);
-  const bracket = getBracketForAge(age);
+  const age = calculateAge(state.editData.birthDate);
+  const bracket = getAgeBracket(age);
   const indicators = RADAR_INDICATORS[bracket];
 
   container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="editStep=2; renderEditChild(document.getElementById('app'), '${id || ''}')" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white;">Atrás</button>
+                <button onclick="window.goToEditStep(2)" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white; cursor:pointer;">Atrás</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
                 <span style="color:#F59E0B; font-size:10px; letter-spacing:2px; font-weight:900;">PASO 3 DE 3</span>
                 <h2 style="color:white; font-family:'Outfit'; margin:5px 0;">Hitos de Crecimiento</h2>
-                <p style="color:rgba(255,255,255,0.4); font-size:14px;">¿Cómo ves a ${editData.name || 'tu hijo'} en estas áreas?</p>
+                <p style="color:rgba(255,255,255,0.4); font-size:14px;">¿Cómo ves a ${state.editData.name || 'tu hijo'} en estas áreas?</p>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:20px;">
                 ${Object.keys(RADAR_AREAS).map(key => {
     const area = RADAR_AREAS[key];
-    const question = indicators[key];
-    const val = editData.responses[key] || 0;
+    const question = (indicators && indicators[key]) ? indicators[key] : 'Indicador no disponible para esta edad.';
+    const val = state.editData.responses[key] || 0;
     return `
                         <div class="os-card" style="background:rgba(30, 41, 59, 0.5); padding:20px; border-radius:24px;">
                             <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
@@ -145,8 +149,8 @@ function renderStep3(container, id) {
                             
                             <div style="display:flex; gap:8px;">
                                 ${['No', 'A veces', 'Sí'].map((label, idx) => `
-                                    <button onclick="editData.responses['${key}']=${idx}; renderStep3(document.getElementById('app'), '${id || ''}')" 
-                                            style="flex:1; padding:10px; border-radius:12px; border:1px solid ${val === idx ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${val === idx ? 'rgba(245, 158, 11, 0.2)' : 'transparent'}; color:white; font-size:12px; font-weight:700;">
+                                    <button type="button" onclick="window.setEditResponse('${key}', ${idx})" 
+                                            style="flex:1; padding:10px; border-radius:12px; border:1px solid ${val === idx ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${val === idx ? 'rgba(245, 158, 11, 0.2)' : 'transparent'}; color:white; font-size:12px; font-weight:700; cursor:pointer;">
                                         ${label}
                                     </button>
                                 `).join('')}
@@ -156,29 +160,29 @@ function renderStep3(container, id) {
   }).join('')}
             </div>
 
-            <button onclick="finalizeEdit('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B); padding:20px; font-weight:900;">
+            <button onclick="window.finalizeEdit('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B); padding:20px; font-weight:900; cursor:pointer;">
                 FINALIZAR Y CREAR PERFIL
             </button>
             
-            ${id ? `<button onclick="deleteChild('${id}')" style="margin-top:20px; width:100%; border:none; background:none; color:rgba(255,255,255,0.3); font-size:11px;">Eliminar Perfil Definitivamente</button>` : ''}
+            ${id ? `<button onclick="window.deleteChild('${id}')" style="margin-top:20px; width:100%; border:none; background:none; color:rgba(255,255,255,0.3); font-size:11px; cursor:pointer;">Eliminar Perfil Definitivamente</button>` : ''}
         </div>
     `;
 }
 
-// LOGIC HELPERS
+// ULTIMATE ROBUST HANDLERS
 window.startEditChild = function (id) {
-  editStep = 1;
+  state.editStep = 1;
   if (id) {
     const c = state.children.find(ch => ch.id === id);
-    editData = {
+    state.editData = {
       name: c.name,
       birthDate: c.birthDate || '',
       gender: c.gender || 'chico',
-      temperament: c.temperament || 'tranquilo',
-      responses: {} // Not restored from radar as it's a new assessment
+      temperament: (c.temperament || 'tranquilo').toLowerCase(),
+      responses: {}
     };
   } else {
-    editData = { name: '', birthDate: '', gender: 'chico', temperament: 'tranquilo', responses: {} };
+    state.editData = { name: '', birthDate: '', gender: 'chico', temperament: 'tranquilo', responses: {} };
   }
   state.editingChildId = id;
   state.view = 'edit_child';
@@ -191,37 +195,68 @@ window.cancelEdit = function () {
 };
 
 window.goToStep2 = function (id) {
-  const name = document.getElementById('edit-name').value;
-  const date = document.getElementById('edit-date').value;
-  if (!name || !date) { alert("Por favor completa el nombre y la fecha."); return; }
-  editData.name = name;
-  editData.birthDate = date;
-  editStep = 2;
+  const nameEl = document.getElementById('edit-name');
+  const dateEl = document.getElementById('edit-date');
+  if (!nameEl || !nameEl.value || !dateEl || !dateEl.value) {
+    alert("Por favor completa el nombre y la fecha.");
+    return;
+  }
+  state.editData.name = nameEl.value;
+  state.editData.birthDate = dateEl.value;
+  state.editStep = 2;
   if (window.render) window.render();
 };
 
 window.goToStep3 = function (id) {
-  editStep = 3;
+  state.editStep = 3;
+  if (window.render) window.render();
+};
+
+window.setEditGender = function (g) {
+  console.log("PIVOT: Setting gender to", g);
+  // Manual text sync to avoid losing typed data
+  const nameEl = document.getElementById('edit-name');
+  const dateEl = document.getElementById('edit-date');
+  if (nameEl) state.editData.name = nameEl.value;
+  if (dateEl) state.editData.birthDate = dateEl.value;
+
+  state.editData.gender = g;
+  if (window.render) window.render();
+};
+
+window.setEditTemperament = function (t) {
+  console.log("PIVOT: Setting temperament to", t);
+  state.editData.temperament = t.toLowerCase();
+  if (window.render) window.render();
+};
+
+window.setEditResponse = function (key, idx) {
+  state.editData.responses[key] = idx;
+  if (window.render) window.render();
+};
+
+window.goToEditStep = function (step) {
+  state.editStep = step;
   if (window.render) window.render();
 };
 
 window.finalizeEdit = function (id) {
-  const radar = calculateInitialRadar(editData.responses);
+  const radar = calculateInitialRadar(state.editData.responses);
 
   if (id) {
     const c = state.children.find(ch => ch.id === id);
-    c.name = editData.name;
-    c.birthDate = editData.birthDate;
-    c.gender = editData.gender;
-    c.temperament = editData.temperament;
+    c.name = state.editData.name;
+    c.birthDate = state.editData.birthDate;
+    c.gender = state.editData.gender;
+    c.temperament = state.editData.temperament;
     c.radar = radar;
   } else {
     state.children.push({
       id: Date.now().toString(),
-      name: editData.name,
-      birthDate: editData.birthDate,
-      gender: editData.gender,
-      temperament: editData.temperament,
+      name: state.editData.name,
+      birthDate: state.editData.birthDate,
+      gender: state.editData.gender,
+      temperament: state.editData.temperament,
       radar: radar,
       currentChallenge: null,
       weeklyFocus: ['autocontrol']
@@ -243,11 +278,3 @@ window.deleteChild = function (id) {
     if (window.render) window.render();
   }
 };
-
-function getBracketForAge(age) {
-  if (age <= 3) return '1-3';
-  if (age <= 6) return '4-6';
-  if (age <= 10) return '7-10';
-  if (age <= 13) return '11-13';
-  return '14-18';
-}

@@ -158,8 +158,9 @@ export async function renderNowInFamily(container) {
                     <path d="m15 18-6-6 6-6"/>
                 </svg>
             </button>
-            <div style="margin-left:15px;">
-                <span style="font-weight:900; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#F59E0B;">${context.momentLabel}</span>
+            <div style="margin-left:15px; display:flex; flex-direction:column;">
+                <span style="font-weight:900; font-size:10px; letter-spacing:1px; text-transform:uppercase; color:rgba(255,158,11,0.6);">${new Intl.DateTimeFormat('es-ES', { weekday: 'long' }).format(new Date())}</span>
+                <span style="font-weight:900; font-size:14px; letter-spacing:1.5px; text-transform:uppercase; color:#F59E0B;">${context.momentLabel}</span>
             </div>
         </header>
 

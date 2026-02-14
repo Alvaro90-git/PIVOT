@@ -16,8 +16,8 @@ export function calculateAge(birthDate) {
 export function getAgeBracket(age) {
     if (age <= 3) return '1-3';
     if (age <= 6) return '4-6';
-    if (age <= 10) return '7-10';
-    if (age <= 13) return '11-13';
+    if (age <= 9) return '7-9';
+    if (age <= 13) return '10-13';
     return '14-18';
 }
 
@@ -82,18 +82,44 @@ export function getSmartTarget(age, area) {
 }
 
 export function getContextAdvice(child) {
-    const hour = new Date().getHours();
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay();
+    const isWeekend = (day === 0 || day === 6);
     const age = child.age;
+
     if (age >= 3 && age <= 10) {
-        if (hour >= 17 && hour <= 19) return { sit: 'pantallas_resistencia', title: 'Gestión de Pantallas', text: 'Alerta de fin de tiempo. Prepáralo 5 minutos antes para evitar rabieta.' };
+        // MAÑANAS
+        if (hour >= 6 && hour <= 9) {
+            if (isWeekend) return { sit: 'autonomia', title: 'Mañana de Descanso', text: 'Es fin de semana. Deja que gestione su tiempo de juego tranquilo mientras despiertas.' };
+            return { sit: 'autonomia', title: 'Rutina Escolar', text: 'Fomenta su autonomía con el desayuno y la mochila. ¡Tú solo supervisas!' };
+        }
+        // TARDES
+        if (hour >= 17 && hour <= 19) {
+            if (isWeekend) return { sit: 'social', title: 'Conexión Total', text: 'Momento ideal para un juego de mesa o una actividad compartida sin prisas.' };
+            return { sit: 'pantallas_resistencia', title: 'Gestión de Pantallas', text: 'Alerta de fin de tiempo. Prepáralo 5 minutos antes para evitar rabieta.' };
+        }
+        // NOCHES
         if (hour >= 20) return { sit: 'bebe_sueno', title: 'Rutina Nocturna', text: 'Es tarde. Una rutina de calma ahora evitará tensión al ir a la cama.' };
+
         return { sit: 'rabietas', title: 'Orden Activo', text: 'Momento de transición. Invítale a recoger sus cosas como un juego.' };
     }
+
     if (age >= 11) {
+        // MAÑANAS
+        if (hour >= 6 && hour <= 9 && !isWeekend) return { sit: 'responsabilidad', title: 'Autogestión', text: 'Día de instituto. No le despiertes: que use su alarma para entrenar responsabilidad.' };
+
+        // TARDES
+        if (hour >= 15 && hour <= 18) {
+            if (isWeekend) return { sit: 'social', title: 'Ocio Compartido', text: 'Salid a caminar o haced algo que le guste. Es el momento de fortalecer el vínculo.' };
+            return { sit: 'adiccion_movil', title: 'Uso del Móvil', text: 'Pico de consumo digital detectado. Propón un plan físico para resetear dopamina.' };
+        }
+        // NOCHES
         if (hour >= 20) return { sit: 'adiccion_movil', title: 'Higiene del Sueño', text: 'Retira dispositivos ahora. Su cerebro necesita desconectar 1h antes de dormir.' };
-        if (hour >= 15 && hour <= 18) return { sit: 'adiccion_movil', title: 'Uso del Móvil', text: 'Pico de consumo digital detectado. Propón un plan físico para resetear dopamina.' };
+
         return { sit: 'aislamiento', title: 'Conexión Emocional', text: 'Momento ideal para charlar sin juicios sobre su día. Abre el canal.' };
     }
+
     return { sit: 'bebe_sueno', title: 'Cuidado Vital', text: 'Mantén la calma y la rutina habitual para asegurar su bienestar.' };
 }
 

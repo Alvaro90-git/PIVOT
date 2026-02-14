@@ -68,6 +68,10 @@ export async function getPersonalizedIdeas() {
         return `${c.name} (${c.age} años${focusAreas ? `. Áreas de crecimiento: ${focusAreas}` : ''})`;
     }).join('; ');
 
+    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const dayName = days[context.dayOfWeek];
+    const dayType = context.isWeekend ? 'FIN DE SEMANA (Sin colegio)' : 'DÍA DE COLEGIO';
+
     const systemPrompt = `Eres el Motor de Sabiduría PIVOT. Tu objetivo es proponer 1 conexión familiar inspirada en "EDUCAR CON AMOR".
 
 REGLAS DE TONO Y SUSTANCIA (Prioridad Máxima):
@@ -79,9 +83,14 @@ REGLAS DE TONO Y SUSTANCIA (Prioridad Máxima):
 MISIÓN:
 - Si es tarde/noche (19h-7h): Propón un "EVENTO" de calma, paz o bendición familiar.
 - Si es día (7h-19h): Propón un "JUEGO" original que trabaje sutilmente las áreas de crecimiento indicadas.
+- IMPORTANTE: Ajusta la intensidad al tipo de día (Colegio vs Fin de semana).
 
-CONTEXTO:
-- Hora: ${currentHour}:00h (${context.momentLabel}).
+CONTEXTO TEMPORAL CRÍTICO:
+- Hoy es: ${dayName} (${dayType}).
+- Hora actual: ${currentHour}:00h (${context.momentLabel}).
+- ADVERTENCIA: No propongas actividades de otros días. Si hoy es ${dayName}, la propuesta es exclusivamente para hoy ${dayName}.
+
+CONTEXTO FAMILIAR:
 - Padres: ${parentContext}
 - Hijos: ${childrenStr}.
 
@@ -92,7 +101,7 @@ Formato: JSON con 1 objeto "idea". Campos: id, type ("Juego", "Evento"), title, 
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_API_KEY}`
+                "Authorization": `Bearer ${OPENAI_API_KEY} `
             },
             body: JSON.stringify({
                 model: "gpt-4o",
@@ -154,23 +163,23 @@ export async function generateAIStory(idea) {
 Tu misión es escribir un cuento para niños que sea AMENO, MÁGICO y que enganche desde la primera frase.
 
 DIRECTRICES DE TONO Y VALORES:
-1. SUTILEZA: No seas "intenso" con el lenguaje religioso o bíblico. Los valores cristianos (amor, obediencia, compañerismo, gratitud) deben ser la esencia del comportamiento de los personajes, no un sermón explícito.
-2. NARRATIVA INFANTIL: El cuento debe ser una aventura o historia mágica real. Las lecciones de vida se aprenden a través de lo que ocurre en la trama (ej: colaborar para superar un obstáculo).
-3. LONGITUD: Unas 600-700 palabras (aprox. 5-7 minutos de lectura). 
+    1. SUTILEZA: No seas "intenso" con el lenguaje religioso o bíblico.Los valores cristianos(amor, obediencia, compañerismo, gratitud) deben ser la esencia del comportamiento de los personajes, no un sermón explícito.
+2. NARRATIVA INFANTIL: El cuento debe ser una aventura o historia mágica real.Las lecciones de vida se aprenden a través de lo que ocurre en la trama(ej: colaborar para superar un obstáculo).
+3. LONGITUD: Unas 600 - 700 palabras(aprox. 5 - 7 minutos de lectura). 
 4. PROTAGONISTAS: ${protagonists.length > 0 ? protagonists.join(' y ') : childrenNames}.
-5. TEMA: ${config.theme}.
+    5. TEMA: ${config.theme}.
 
 Formato de salida: JSON con:
-- title: Título creativo y sugerente.
-- content: El texto completo del cuento (usa \n\n para párrafos).
-- metadata: { virtue: "${config.theme}", duration: "6-7 min" }`;
+    - title: Título creativo y sugerente.
+- content: El texto completo del cuento(usa \n\n para párrafos).
+- metadata: { virtue: "${config.theme}", duration: "6-7 min" } `;
 
     try {
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_API_KEY}`
+                "Authorization": `Bearer ${OPENAI_API_KEY} `
             },
             body: JSON.stringify({
                 model: "gpt-4o",

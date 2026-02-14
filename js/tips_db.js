@@ -60,7 +60,7 @@ export const TIPS_DB = [
         id: 't103', area: 'responsabilidad', min: 3, max: 5, title: 'Encargado del Agua',
         text: 'Dale la misión de regar una planta cada viernes. Pequeños cargos crean pertenencia.',
         explanation: '<b>El Porqué:</b> La responsabilidad nace de sentirse útil. Cuando un niño contribuye al bienestar de otro ser vivo o de la casa, su sentido de pertenencia se fortalece.<br><br><b>Cómo aplicarlo:</b> Haz que la tarea sea sagrada. Dale su propia regadera pequeña y marca el día en el calendario. Lo importante no es la planta, sino su constancia.',
-        color: '#8B5CF6', icon: '🪴'
+        color: '#8B5CF6', icon: '🪴', restrictedDay: 5 // Friday
     },
     {
         id: 't104', area: 'respeto', min: 3, max: 5, title: 'Opciones Cerradas',
@@ -92,7 +92,7 @@ export const TIPS_DB = [
         id: 't201', area: 'responsabilidad', min: 6, max: 9, title: 'Reunión Familiar',
         text: 'Los domingos, sentaos 10 min a planear la semana. Que todos opinen. Crea equipo.',
         explanation: '<b>El Porqué:</b> Participar en la toma de decisiones aumenta el compromiso. Cuando los niños ayudan a planear el menú o las salidas, se sienten respetados como miembros activos del sistema.<br><br><b>Cómo aplicarlo:</b> Usa una libreta o pizarra. Pregunta: "¿Qué plato especial os gustaría esta semana?" o "¿Qué juego haremos el sábado tarde?". Los acuerdos se cumplen mejor que las órdenes.',
-        color: '#8B5CF6', icon: '🗓️'
+        color: '#8B5CF6', icon: '🗓️', restrictedDay: 0 // Sunday
     },
     {
         id: 't202', area: 'social', min: 6, max: 9, title: 'La Regla de Oro',
@@ -203,7 +203,9 @@ export function getDailyTipsForChild(child, count = 3) {
     }
 
     // 2. Generate New Tips
+    const now = new Date();
     const age = child.age;
+    const currentDay = now.getDay();
 
     // Gap Analysis
     const gaps = Object.keys(RADAR_AREAS).map(area => {
@@ -217,7 +219,15 @@ export function getDailyTipsForChild(child, count = 3) {
 
     // Filter Candidates
     const history = JSON.parse(localStorage.getItem(storageKeyHistory) || '[]');
-    let candidates = TIPS_DB.filter(t => age >= t.min && age <= t.max);
+    let candidates = TIPS_DB.filter(t => {
+        // Basic filters
+        if (age < t.min || age > t.max) return false;
+
+        // Day restriction filter
+        if (t.restrictedDay !== undefined && t.restrictedDay !== currentDay) return false;
+
+        return true;
+    });
 
     // Filter History
     const freshCandidates = candidates.filter(t => !history.includes(t.id));

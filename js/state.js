@@ -49,7 +49,15 @@ const DEFAULT_STATE = {
     lastIdeasUpdate: 0,
     hasSeenTour: false,
     mentorMessages: [],
-    mentorPreferences: { likesBooks: true, lastTopics: [] }
+    mentorPreferences: { likesBooks: true, lastTopics: [] },
+    editStep: 1,
+    editData: {
+        name: '',
+        birthDate: '',
+        gender: 'chico',
+        temperament: 'tranquilo',
+        responses: {}
+    }
 };
 
 // Logic to load state or reset if version mismatch
