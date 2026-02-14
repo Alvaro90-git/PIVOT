@@ -72,6 +72,18 @@ if (localStorage.getItem('hasSeenOnboarding_v13') !== 'true') {
     state.view = 'login';
 }
 
+// FORCE INITIALIZATION OF NEW STATE FIELDS (Fisura Cero)
+if (!state.editData) {
+    state.editData = {
+        name: '',
+        birthDate: '',
+        gender: 'chico',
+        temperament: 'tranquilo',
+        responses: {}
+    };
+}
+if (!state.editStep) state.editStep = 1;
+
 export function save() {
     localStorage.setItem('pivot_state', JSON.stringify(state));
 }

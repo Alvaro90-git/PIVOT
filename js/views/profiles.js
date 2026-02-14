@@ -3,11 +3,132 @@ import { RADAR_AREAS, RADAR_INDICATORS, TEMPERAMENTS } from '../data.js';
 import { calculateAge, calculateInitialRadar, getAgeBracket } from '../logic.js';
 
 /**
- * PIVOT PROFILE WIZARD - ULTIMATE ROBUST VERSION
- * This version uses explicit global handlers on 'window' to avoid any scoping issues
- * and ensures state synchronization before re-rendering.
+ * PIVOT PROFILE WIZARD - ROBUSTNESS LEVEL: GOD MODE
+ * Fixed ReferenceErrors by ensuring all handlers are explicitly global via window.
  */
 
+// Global Handlers Definition
+window.setEditGender = function (g) {
+  try {
+    const nameEl = document.getElementById('edit-name');
+    const dateEl = document.getElementById('edit-date');
+    if (nameEl) state.editData.name = nameEl.value;
+    if (dateEl) state.editData.birthDate = dateEl.value;
+
+    state.editData.gender = g;
+    console.log("PIVOT: Gender set to", g);
+    if (window.render) window.render();
+  } catch (e) {
+    console.error("PIVOT Error in setEditGender:", e);
+  }
+};
+
+window.setEditTemperament = function (t) {
+  try {
+    state.editData.temperament = t.toLowerCase();
+    console.log("PIVOT: Temperament set to", t);
+    if (window.render) window.render();
+  } catch (e) {
+    console.error("PIVOT Error in setEditTemperament:", e);
+  }
+};
+
+window.setEditResponse = function (key, idx) {
+  state.editData.responses[key] = idx;
+  if (window.render) window.render();
+};
+
+window.goToEditStep = function (step) {
+  state.editStep = step;
+  if (window.render) window.render();
+};
+
+window.startEditChild = function (id) {
+  state.editStep = 1;
+  if (id) {
+    const c = state.children.find(ch => ch.id === id);
+    if (c) {
+      state.editData = {
+        name: c.name,
+        birthDate: c.birthDate || '',
+        gender: c.gender || 'chico',
+        temperament: (c.temperament || 'tranquilo').toLowerCase(),
+        responses: {}
+      };
+    }
+  } else {
+    state.editData = { name: '', birthDate: '', gender: 'chico', temperament: 'tranquilo', responses: {} };
+  }
+  state.editingChildId = id;
+  state.view = 'edit_child';
+  if (window.render) window.render();
+};
+
+window.cancelEdit = function () {
+  state.view = 'profiles';
+  if (window.render) window.render();
+};
+
+window.goToStep2 = function (id) {
+  const nameEl = document.getElementById('edit-name');
+  const dateEl = document.getElementById('edit-date');
+  if (!nameEl || !nameEl.value || !dateEl || !dateEl.value) {
+    alert("Por favor completa el nombre y la fecha.");
+    return;
+  }
+  state.editData.name = nameEl.value;
+  state.editData.birthDate = dateEl.value;
+  state.editStep = 2;
+  if (window.render) window.render();
+};
+
+window.goToStep3 = function (id) {
+  state.editStep = 3;
+  if (window.render) window.render();
+};
+
+window.finalizeEdit = function (id) {
+  const radar = calculateInitialRadar(state.editData.responses);
+
+  if (id) {
+    const c = state.children.find(ch => ch.id === id);
+    if (c) {
+      c.name = state.editData.name;
+      c.birthDate = state.editData.birthDate;
+      c.gender = state.editData.gender;
+      c.temperament = state.editData.temperament;
+      c.radar = radar;
+    }
+  } else {
+    state.children.push({
+      id: Date.now().toString(),
+      name: state.editData.name,
+      birthDate: state.editData.birthDate,
+      gender: state.editData.gender,
+      temperament: state.editData.temperament,
+      radar: radar,
+      currentChallenge: null,
+      weeklyFocus: ['autocontrol']
+    });
+  }
+
+  save();
+  state.view = 'profiles';
+  if (window.render) window.render();
+};
+
+window.deleteChild = function (id) {
+  if (state.children.length <= 1) { alert("Debes tener al menos un perfil de hijo."); return; }
+  if (confirm("¿Estás seguro de eliminar este perfil? Esto borrará todo su historial.")) {
+    state.children = state.children.filter(c => c.id !== id);
+    if (state.currentChildId === id) state.currentChildId = state.children[0].id;
+    save();
+    state.view = 'profiles';
+    if (window.render) window.render();
+  }
+};
+
+// Render Functions
 export function renderProfiles(container) {
   container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
@@ -47,7 +168,6 @@ export function renderEditChild(container, id) {
   else if (state.editStep === 3) renderStep3(container, id);
 }
 
-// STEP 1: FICHA BÁSICA
 function renderStep1(container, id) {
   container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
@@ -80,7 +200,6 @@ function renderStep1(container, id) {
     `;
 }
 
-// STEP 2: TEMPERAMENTO
 function renderStep2(container, id) {
   container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
@@ -116,13 +235,13 @@ function renderStep2(container, id) {
     `;
 }
 
-// STEP 3: HITOS DE MADUREZ
 function renderStep3(container, id) {
-  const age = calculateAge(state.editData.birthDate);
-  const bracket = getAgeBracket(age);
-  const indicators = RADAR_INDICATORS[bracket];
+  try {
+    const age = state.editData.birthDate ? calculateAge(state.editData.birthDate) : 5;
+    const bracket = getAgeBracket(age) || '4-6';
+    const indicators = RADAR_INDICATORS[bracket];
 
-  container.innerHTML = `
+    container.innerHTML = `
         <div class="view scroll-y" style="padding:25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
                 <button onclick="window.goToEditStep(2)" style="background:rgba(255,255,255,0.1); border:none; border-radius:15px; padding:8px 15px; color:white; cursor:pointer;">Atrás</button>
@@ -136,10 +255,10 @@ function renderStep3(container, id) {
 
             <div style="display:flex; flex-direction:column; gap:20px;">
                 ${Object.keys(RADAR_AREAS).map(key => {
-    const area = RADAR_AREAS[key];
-    const question = (indicators && indicators[key]) ? indicators[key] : 'Indicador no disponible para esta edad.';
-    const val = state.editData.responses[key] || 0;
-    return `
+      const area = RADAR_AREAS[key];
+      const question = (indicators && indicators[key]) ? indicators[key] : 'Indicador pendiente.';
+      const val = state.editData.responses[key] || 0;
+      return `
                         <div class="os-card" style="background:rgba(30, 41, 59, 0.5); padding:20px; border-radius:24px;">
                             <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
                                 <span style="font-size:18px;">${area.icon}</span>
@@ -157,124 +276,16 @@ function renderStep3(container, id) {
                             </div>
                         </div>
                     `;
-  }).join('')}
+    }).join('')}
             </div>
 
             <button onclick="window.finalizeEdit('${id || ''}')" class="btn-primary" style="margin-top:30px; background:linear-gradient(90deg, #D97706, #F59E0B); padding:20px; font-weight:900; cursor:pointer;">
                 FINALIZAR Y CREAR PERFIL
             </button>
-            
-            ${id ? `<button onclick="window.deleteChild('${id}')" style="margin-top:20px; width:100%; border:none; background:none; color:rgba(255,255,255,0.3); font-size:11px; cursor:pointer;">Eliminar Perfil Definitivamente</button>` : ''}
         </div>
     `;
+  } catch (e) {
+    console.error("PIVOT: Error rendering step 3", e);
+    container.innerHTML = `<div class="view p-20">Error cargando hitos. Por favor vuelve atrás. <button onclick="window.goToEditStep(2)">Atrás</button></div>`;
+  }
 }
-
-// ULTIMATE ROBUST HANDLERS
-window.startEditChild = function (id) {
-  state.editStep = 1;
-  if (id) {
-    const c = state.children.find(ch => ch.id === id);
-    state.editData = {
-      name: c.name,
-      birthDate: c.birthDate || '',
-      gender: c.gender || 'chico',
-      temperament: (c.temperament || 'tranquilo').toLowerCase(),
-      responses: {}
-    };
-  } else {
-    state.editData = { name: '', birthDate: '', gender: 'chico', temperament: 'tranquilo', responses: {} };
-  }
-  state.editingChildId = id;
-  state.view = 'edit_child';
-  if (window.render) window.render();
-};
-
-window.cancelEdit = function () {
-  state.view = 'profiles';
-  if (window.render) window.render();
-};
-
-window.goToStep2 = function (id) {
-  const nameEl = document.getElementById('edit-name');
-  const dateEl = document.getElementById('edit-date');
-  if (!nameEl || !nameEl.value || !dateEl || !dateEl.value) {
-    alert("Por favor completa el nombre y la fecha.");
-    return;
-  }
-  state.editData.name = nameEl.value;
-  state.editData.birthDate = dateEl.value;
-  state.editStep = 2;
-  if (window.render) window.render();
-};
-
-window.goToStep3 = function (id) {
-  state.editStep = 3;
-  if (window.render) window.render();
-};
-
-window.setEditGender = function (g) {
-  console.log("PIVOT: Setting gender to", g);
-  // Manual text sync to avoid losing typed data
-  const nameEl = document.getElementById('edit-name');
-  const dateEl = document.getElementById('edit-date');
-  if (nameEl) state.editData.name = nameEl.value;
-  if (dateEl) state.editData.birthDate = dateEl.value;
-
-  state.editData.gender = g;
-  if (window.render) window.render();
-};
-
-window.setEditTemperament = function (t) {
-  console.log("PIVOT: Setting temperament to", t);
-  state.editData.temperament = t.toLowerCase();
-  if (window.render) window.render();
-};
-
-window.setEditResponse = function (key, idx) {
-  state.editData.responses[key] = idx;
-  if (window.render) window.render();
-};
-
-window.goToEditStep = function (step) {
-  state.editStep = step;
-  if (window.render) window.render();
-};
-
-window.finalizeEdit = function (id) {
-  const radar = calculateInitialRadar(state.editData.responses);
-
-  if (id) {
-    const c = state.children.find(ch => ch.id === id);
-    c.name = state.editData.name;
-    c.birthDate = state.editData.birthDate;
-    c.gender = state.editData.gender;
-    c.temperament = state.editData.temperament;
-    c.radar = radar;
-  } else {
-    state.children.push({
-      id: Date.now().toString(),
-      name: state.editData.name,
-      birthDate: state.editData.birthDate,
-      gender: state.editData.gender,
-      temperament: state.editData.temperament,
-      radar: radar,
-      currentChallenge: null,
-      weeklyFocus: ['autocontrol']
-    });
-  }
-
-  save();
-  state.view = 'profiles';
-  if (window.render) window.render();
-};
-
-window.deleteChild = function (id) {
-  if (state.children.length <= 1) { alert("Debes tener al menos un perfil de hijo."); return; }
-  if (confirm("¿Estás seguro de eliminar este perfil? Esto borrará todo su historial.")) {
-    state.children = state.children.filter(c => c.id !== id);
-    if (state.currentChildId === id) state.currentChildId = state.children[0].id;
-    save();
-    state.view = 'profiles';
-    if (window.render) window.render();
-  }
-};
