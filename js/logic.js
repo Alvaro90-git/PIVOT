@@ -1,12 +1,35 @@
 import { WEEKLY_PLAN_DB, CHALLENGE_DB, RADAR_AREAS, PARENT_CHILD_MATCH_DB } from './data.js';
 import { state } from './state.js';
 
+export function calculateAge(birthDate) {
+    if (!birthDate) return 0;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 export function getAgeBracket(age) {
     if (age <= 3) return '1-3';
     if (age <= 6) return '4-6';
     if (age <= 10) return '7-10';
     if (age <= 13) return '11-13';
     return '14-18';
+}
+
+export function calculateInitialRadar(responses) {
+    // responses is an object { areaKey: 0|1|2 } where 0=No, 1=A veces, 2=Sí
+    const radar = {};
+    Object.keys(responses).forEach(key => {
+        const val = responses[key];
+        // Map 0-2 to a 1.5 - 4.5 baseline range to leave room for growth
+        radar[key] = 1.5 + (val * 1.5);
+    });
+    return radar;
 }
 
 export function getWeeklyPlan(child) {

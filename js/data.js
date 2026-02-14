@@ -146,6 +146,29 @@ export const SITUATIONS = [
     { id: 'futuro_ansiedad', name: 'Ansiedad por el futuro', icon: '🔮', min_age: 14, max_age: 18, radarAreas: ['esfuerzo', 'autocontrol'], cards: [{ age: 'Adolescente', phrase: 'Confía en tus talentos, el camino se hace paso a paso.', steps: ['Orientación constructiva.', 'No proyectes tus miedos.', 'Enfoque en el hoy.'], limit: 'Estudio/Trabajo.', consequence: 'Angustia paralizante.', repair: 'Paseo por la naturaleza.' }] }
 ];
 
+export const TEMPERAMENTS = {
+    'intenso': {
+        name: 'Explorador / Intenso',
+        icon: '🔥',
+        desc: 'Alta energía, reacciones fuertes y mucha persistencia. Necesita límites muy claros con alta conexión.'
+    },
+    'sensible': {
+        name: 'Sensible / Perceptivo',
+        icon: '🌿',
+        desc: 'Siente todo con mucha profundidad. Se abruma fácil. Necesita mucha validación y calma.'
+    },
+    'tranquilo': {
+        name: 'Tranquilo / Adaptable',
+        icon: '☀️',
+        desc: 'Suele estar de buen humor y se ajusta bien a los cambios. El reto es no olvidarnos de sus necesidades.'
+    },
+    'observador': {
+        name: 'Observador / Cuidadoso',
+        icon: '🦉',
+        desc: 'Necesita tiempo para los cambios. Observa mucho antes de actuar. Precisa paciencia y seguridad.'
+    }
+};
+
 export const RADAR_AREAS = {
     'autocontrol': { name: 'Autocontrol', icon: '🧘', why: 'Impulsos, frustración, pausa y gestión de ira.' },
     'respeto': { name: 'Respeto y Obediencia', icon: '🤝', why: 'Seguir instrucciones, límites, normas y tono respetuoso.' },

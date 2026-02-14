@@ -26,14 +26,14 @@ const DEFAULT_STATE = {
         {
             id: '1',
             name: 'Alvaro',
-            age: 7,
-            temperament: 'Intenso',
+            birthDate: '2017-05-15',
+            temperament: 'intenso',
             radar: {
                 autocontrol: 3,
                 respeto: 3,
                 autonomia: 3,
                 responsabilidad: 3,
-                habilidades_sociales: 3,
+                social: 3,
                 esfuerzo: 3
             },
             currentChallenge: null,
@@ -74,7 +74,21 @@ export function getChild() {
 
     // Safety check: Ensure radar exists
     if (child && !child.radar) {
-        child.radar = { autocontrol: 1, respeto: 1, autonomia: 1, responsabilidad: 1, habilidades_sociales: 1, esfuerzo: 1 };
+        child.radar = { autocontrol: 1, respeto: 1, autonomia: 1, responsabilidad: 1, social: 1, esfuerzo: 1 };
+    }
+
+    // Dynamic Age Calculation
+    if (child && child.birthDate) {
+        const today = new Date();
+        const birth = new Date(child.birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        child.age = age;
+    } else if (child && !child.age) {
+        child.age = 5; // Safe fallback
     }
 
     return child;
