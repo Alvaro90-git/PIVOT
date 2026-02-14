@@ -47,9 +47,9 @@ function renderStep1(container, child) {
             .sit-name { color: white; font-size: 13px; font-weight: 700; line-height: 1.2; }
         </style>
 
-        <div class="view scroll-y" style="padding: 25px; background:#0F172A; height:100vh;">
+        <div class="view scroll-y" style="padding: 25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="resetRegistration()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white;">Cancelar</button>
+                <button onclick="resetRegistration()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white; font-weight:700;">Cancelar</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
@@ -70,7 +70,6 @@ function renderStep1(container, child) {
                     <span class="sit-name">Otro momento</span>
                 </div>
             </div>
-            <div style="height:100px;"></div>
         </div>
     `;
 }
@@ -78,9 +77,9 @@ function renderStep1(container, child) {
 // STEP 2: Valorar Reacción del Niño
 function renderStep2(container, child) {
     container.innerHTML = `
-        <div class="view scroll-y" style="padding: 25px; background:#0F172A; height:100vh;">
+        <div class="view scroll-y" style="padding: 25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="prevStep()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white;">Atrás</button>
+                <button onclick="prevStep()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white; font-weight:700;">Atrás</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
@@ -119,9 +118,9 @@ function renderStep2(container, child) {
 // STEP 3: Valorar Reacción del Padre
 function renderStep3(container, child) {
     container.innerHTML = `
-        <div class="view scroll-y" style="padding: 25px; background:#0F172A; height:100vh;">
+        <div class="view scroll-y" style="padding: 25px 25px 120px; background:#0F172A;">
             <header class="header-compact">
-                <button onclick="prevStep()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white;">Atrás</button>
+                <button onclick="prevStep()" style="background: rgba(255,255,255,0.1); border: none; border-radius: 15px; padding: 8px 15px; color: white; font-weight:700;">Atrás</button>
             </header>
 
             <div style="text-align:center; margin: 20px 0 30px;">
@@ -162,7 +161,6 @@ function renderStep3(container, child) {
             <button onclick="commitHuella()" class="btn-primary" style="margin-top:30px; background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%);">
                 GUARDAR HUELLA FAMILIAR
             </button>
-            <div style="height:40px;"></div>
         </div>
     `;
 }
