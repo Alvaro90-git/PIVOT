@@ -229,7 +229,7 @@ window.handleHandshake = async function (id, approved) {
 // Render Functions
 export function renderProfiles(container) {
   // Check for pending handshakes (Simulation)
-  const handshakes = CloudService.checkApprovals ? simCloud.pendingApprovals.filter(a => a.targetParentId === state.userId) : [];
+  const handshakes = CloudService._simCloud ? CloudService._simCloud.pendingApprovals.filter(a => a.targetParentId === state.userId) : [];
 
   container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">

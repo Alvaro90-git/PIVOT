@@ -2,12 +2,12 @@ import { state, save, getChild } from './state.js';
 import { renderStoryReader } from './views/story_reader.js';
 import { renderMentor } from './views/mentor.js';
 import { getWeeklyChallenges } from './logic.js';
+import { CloudService } from './cloud_service.js';
 
 console.log("PIVOT: app.js loaded");
 document.documentElement.setAttribute('data-pivot-loaded', 'true');
 
 window.getWeeklyChallenges = getWeeklyChallenges;
-import { CloudService } from './cloud_service.js';
 
 // Init Cloud Identity
 CloudService.ensureAccount();

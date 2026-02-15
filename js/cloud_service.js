@@ -13,6 +13,7 @@ let simCloud = {
 };
 
 export const CloudService = {
+    _simCloud: simCloud, // Safety bridge for sync rendering
 
     // --- 1. USER IDENTITY ---
     async ensureAccount() {
