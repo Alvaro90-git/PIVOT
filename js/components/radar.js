@@ -1,4 +1,4 @@
-import { RADAR_AREAS } from '../data.js';
+import { RADAR_AREAS, DIAGNOSIS_MATRIX } from '../data.js';
 import { getSmartTarget } from '../logic.js';
 
 export function getRadarSVG(child) {
@@ -186,8 +186,9 @@ export function getParentRadarSVG(parent) {
 
 window.getParentRadarSVG = getParentRadarSVG;
 
-export function getHarmonyRadarSVG(parentData, childData) {
+export function getHarmonyRadarSVG(parentData, childData, childAge = 5) {
    if (!parentData || !childData) return '';
+   const ageMatrix = DIAGNOSIS_MATRIX[childAge] || DIAGNOSIS_MATRIX[5];
    const toRad = (deg) => (deg * Math.PI) / 180;
 
    const size = 300;
@@ -212,7 +213,7 @@ export function getHarmonyRadarSVG(parentData, childData) {
       const angle = i * angleStep - 90;
       const pVal = parentData[axis.pKey] || 1;
       const cVal = childData[axis.cKey] || 1;
-      const targetVal = 4.5; // Objetivo común de maestría PIVOT
+      const targetVal = ageMatrix[axis.cKey]?.target || 4.5; // Meta específica por edad de la Matriz MICP
 
       const pRadius = (pVal / 5) * radius;
       const cRadius = (cVal / 5) * radius;

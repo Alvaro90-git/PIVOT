@@ -130,7 +130,7 @@ export function renderConnectionKeys(container, childId) {
             <div class="feature-card" style="background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(245, 158, 11, 0.2); padding: 25px;">
                 <span class="section-label" style="color:#F59E0B; text-align:center; margin-bottom:20px;">Radar de Sintonía</span>
                 
-                ${getHarmonyRadarSVG(parent.radar, child.radar)}
+                ${getHarmonyRadarSVG(parent.radar, child.radar, age)}
 
                 <div style="margin-top:25px; display:flex; flex-direction:column; gap:12px;">
                     ${generateHarmonyInsights(parent.radar, child.radar, child.name).map(ins => `

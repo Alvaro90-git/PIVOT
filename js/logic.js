@@ -1,4 +1,4 @@
-import { WEEKLY_PLAN_DB, CHALLENGE_DB, RADAR_AREAS, PARENT_CHILD_MATCH_DB } from './data.js';
+import { WEEKLY_PLAN_DB, CHALLENGE_DB, RADAR_AREAS, PARENT_CHILD_MATCH_DB, DIAGNOSIS_MATRIX } from './data.js';
 import { state } from './state.js';
 
 export function calculateAge(birthDate) {
@@ -21,13 +21,17 @@ export function getAgeBracket(age) {
     return '14-18';
 }
 
-export function calculateInitialRadar(responses) {
-    // responses is an object { areaKey: 0|1|2 } where 0=No, 1=A veces, 2=Sí
+export function calculateInitialRadar(responses, age = 5) {
     const radar = {};
+    const ageMatrix = DIAGNOSIS_MATRIX[age] || DIAGNOSIS_MATRIX[5];
+
     Object.keys(responses).forEach(key => {
-        const val = responses[key];
-        // Map 0-2 to a 1.5 - 4.5 baseline range to leave room for growth
-        radar[key] = 1.5 + (val * 1.5);
+        const val = responses[key]; // 0, 1, 2
+        const target = ageMatrix[key]?.target || 3.0;
+
+        if (val === 2) radar[key] = target; // Sí = Meta de su edad
+        else if (val === 1) radar[key] = target * 0.7; // A veces = 70% de su meta
+        else radar[key] = Math.max(1, target * 0.4); // No = 40% de su meta
     });
     return radar;
 }

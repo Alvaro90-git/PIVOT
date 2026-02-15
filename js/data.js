@@ -766,3 +766,191 @@ export const FARO_DB = {
         upcoming: "Autogestión total y transición a la vida adulta independiente."
     }
 };
+
+/**
+ * PIVOT PROFESSIONAL DIAGNOSIS MATRIX (MICP)
+ * Matriz maestra de 1 a 18 años para las 8 áreas del radar.
+ * Cada pregunta es un "hecho observable" para garantizar la objetividad.
+ */
+export const DIAGNOSIS_MATRIX = {
+    1: {
+        autocontrol: { q: "¿Detiene su acción al menos un instante ante un 'no' firme?", target: 2.0 },
+        responsabilidad: { q: "¿Colabora mínimamente al vestirle (estira brazos/piernas)?", target: 1.5 },
+        respeto: { q: "¿Busca tu mirada para validar lo que hace (referencia social)?", target: 2.5 },
+        autonomia: { q: "¿Intenta beber de un vaso solo o coger la cuchara?", target: 2.0 },
+        emocional: { q: "¿Usa el contacto físico contigo para calmarse tras un susto?", target: 3.0 },
+        social: { q: "¿Muestra interés por observar o acercarse a otros niños?", target: 2.5 },
+        esfuerzo: { q: "¿Persiste en alcanzar un objeto difícil de coger?", target: 2.0 },
+        reparacion: { q: "¿Se calma en pocos minutos al ser abrazado tras un llanto?", target: 3.0 }
+    },
+    2: {
+        autocontrol: { q: "¿Es capaz de esperar unos segundos a que le des algo sin arrebatarlo?", target: 2.2 },
+        responsabilidad: { q: "¿Ayuda a guardar un juguete si tú lo haces con él/ella?", target: 1.8 },
+        respeto: { q: "¿A acepta dejar un objeto peligroso si se le da una alternativa?", target: 2.8 },
+        autonomia: { q: "¿Intenta ponerse alguna prenda sencilla (calcetín, gorro) solo?", target: 2.5 },
+        emocional: { q: "¿Es capaz de señalar lo que le duele o le molesta?", target: 3.2 },
+        social: { q: "¿Comparte un juguete brevemente si tú se lo pides?", target: 2.8 },
+        esfuerzo: { q: "¿Sigue intentando una tarea motriz después de un primer fallo?", target: 2.5 },
+        reparacion: { q: "¿Busca tu afecto tras haber tenido una rabieta o enfado?", target: 3.5 }
+    },
+    3: {
+        autocontrol: { q: "¿Cesa el llanto físico en menos de 5 min al ser acogido tras un 'no'?", target: 2.5 },
+        responsabilidad: { q: "¿Lleva su pañal sucio o un papel al sitio indicado si se le pide?", target: 2.2 },
+        respeto: { q: "¿Usa el nombre de los demás sin gritar para llamar la atención?", target: 3.0 },
+        autonomia: { q: "¿Come solo la mayor parte del tiempo (aunque ensucie)?", target: 3.0 },
+        emocional: { q: "¿Empieza a usar palabras como 'triste' o 'enfadado'?", target: 3.5 },
+        social: { q: "¿Inicia interacciones sencillas con iguales (ofrece un juguete)?", target: 3.0 },
+        esfuerzo: { q: "¿Intenta terminar un puzle sencillo aunque le cueste encajarlo?", target: 3.0 },
+        reparacion: { q: "¿Acepta un beso o abrazo de reconciliación tras un conflicto?", target: 3.8 }
+    },
+    4: {
+        autocontrol: { q: "¿Acepta un 'ahora no' sin entrar en bucle de repeticiones?", target: 2.8 },
+        responsabilidad: { q: "¿Recoge sus juguetes al terminar si se le guía paso a paso?", target: 2.5 },
+        respeto: { q: "¿Pide las cosas 'por favor' habitual u ocasionalmente?", target: 3.5 },
+        autonomia: { q: "¿Se quita y pone los zapatos solo si no tienen cordones?", target: 3.5 },
+        emocional: { q: "¿Sabe distinguir entre un dolor físico y un disgusto?", target: 3.8 },
+        social: { q: "¿Es capaz de esperar un turno corto en un juego compartido?", target: 3.5 },
+        esfuerzo: { q: "¿Termina una tarea sencilla (dibujo, construcción) que ha empezado?", target: 3.5 },
+        reparacion: { q: "¿Pide perdón si se le indica que ha hecho daño a alguien?", target: 4.0 }
+    },
+    5: {
+        autocontrol: { q: "¿Es capaz de frenar un juego físico intenso cuando se le indica?", target: 3.2 },
+        responsabilidad: { q: "¿Coloca su ropa sucia en el cesto o sus zapatos en su sitio solo?", target: 3.0 },
+        respeto: { q: "¿Escucha sin interrumpir sistemáticamente las frases de los adultos?", target: 3.8 },
+        autonomia: { q: "¿Es capaz de vestirse solo (excepto botones o cordones difíciles)?", target: 4.0 },
+        emocional: { q: "¿Explica la causa de su enfado con frases sencillas en frío?", target: 4.0 },
+        social: { q: "¿Muestra empatía cuando ve a otro niño llorar o sufrir?", target: 3.8 },
+        esfuerzo: { q: "¿Persiste en una actividad nueva que no le sale a la primera?", target: 3.8 },
+        reparacion: { q: "¿Intenta 'arreglar' algo que ha roto o manchado sin esconderse?", target: 4.2 }
+    },
+    6: {
+        autocontrol: { q: "¿Puede esperar a que todos estén en la mesa para empezar a comer?", target: 3.5 },
+        responsabilidad: { q: "¿Prepara su mochila (metiendo el agua/merienda) con tu ayuda?", target: 3.2 },
+        respeto: { q: "¿Acepta las normas de los juegos sin intentar hacer trampas siempre?", target: 4.0 },
+        autonomia: { q: "¿Se asea o ducha con supervisión mínima pero siguiendo pasos?", target: 4.2 },
+        emocional: { q: "¿Es capaz de calmarse solo usando alguna técnica (respirar, rincón)?", target: 4.2 },
+        social: { q: "¿Mantiene amistades estables y juega en grupo sin conflictos graves?", target: 4.0 },
+        esfuerzo: { q: "¿Se esfuerza por mejorar en algo que le cuesta (deporte, lectura)?", target: 4.0 },
+        reparacion: { q: "¿Pide perdón por iniciativa propia si se da cuenta de un error?", target: 4.4 }
+    },
+    7: {
+        autocontrol: { q: "¿Tolera perder en un juego sin enfados desproporcionados o llanto?", target: 3.8 },
+        responsabilidad: { q: "¿Se encarga de una tarea fija en casa (poner la mesa, regar)?", target: 3.5 },
+        respeto: { q: "¿Usa un tono de voz adecuado en lugares públicos sin que se le pida?", target: 4.2 },
+        autonomia: { q: "¿Gestiona su tiempo de juego y deberes con solo un recordatorio?", target: 4.4 },
+        emocional: { q: "¿Sabe pedir ayuda emocional cuando se siente desbordado?", target: 4.4 },
+        social: { q: "¿Defiende a un compañero o hermano si ve una injusticia clara?", target: 4.2 },
+        esfuerzo: { q: "¿Continúa una tarea aunque sea aburrida (p.ej. practicar caligrafía)?", target: 4.2 },
+        reparacion: { q: "¿Busca una forma práctica de compensar a alguien tras un fallo?", target: 4.5 }
+    },
+    8: {
+        autocontrol: { q: "¿Es capaz de dejar una pantalla al primer aviso sin hostilidad?", target: 4.0 },
+        responsabilidad: { q: "¿Se acuerda de sus deberes o materiales sin que se le recuerde?", target: 3.8 },
+        respeto: { q: "¿Muestra respeto por las pertenencias de otros (pide permiso)?", target: 4.4 },
+        autonomia: { q: "¿Es autónomo en el estudio/deberes la mayor parte del tiempo?", target: 4.5 },
+        emocional: { q: "¿Identifica emociones complejas como el agobio o la envidia?", target: 4.5 },
+        social: { q: "¿Es capaz de colaborar en equipo por un objetivo común?", target: 4.4 },
+        esfuerzo: { q: "¿Acepta críticas constructivas sobre su trabajo sin desanimarse?", target: 4.4 },
+        reparacion: { q: "¿Reconoce su parte de culpa en una discusión aunque el otro también?", target: 4.6 }
+    },
+    9: {
+        autocontrol: { q: "¿Controla sus impulsos físicos (manos, pies) en momentos de tensión?", target: 4.2 },
+        responsabilidad: { q: "¿Gestiona bien su dinero (paga) o pequeños recursos propios?", target: 4.0 },
+        respeto: { q: "¿Mantiene conductas cívicas (no tirar papeles, saludar) por hábito?", target: 4.5 },
+        autonomia: { q: "¿Es capaz de prepararse algo sencillo de comer (un bocadillo)?", target: 4.6 },
+        emocional: { q: "¿Puede expresar qué necesita de ti cuando se siente mal?", target: 4.6 },
+        social: { q: "¿Resuelve conflictos con amigos mediante el diálogo habitual?", target: 4.5 },
+        esfuerzo: { q: "¿Se pone metas propias (p.ej. aprender un truco) y las persigue?", target: 4.5 },
+        reparacion: { q: "¿Se asegura de que el clima familiar sea bueno tras un conflicto?", target: 4.7 }
+    },
+    10: {
+        autocontrol: { q: "¿Maneja la frustración de no conseguir lo que quiere con calma?", target: 4.4 },
+        responsabilidad: { q: "¿Cuida de sus dispositivos o material valioso con conciencia?", target: 4.2 },
+        respeto: { q: "¿Respeta la autoridad de otros adultos (profesores, abuelos)?", target: 4.6 },
+        autonomia: { q: "¿Es capaz de ir solo a sitios cercanos (colegio, panadería)?", target: 4.7 },
+        emocional: { q: "¿Muestra equilibrio entre sus necesidades y las de los demás?", target: 4.7 },
+        social: { q: "¿Es capaz de decir 'no' a una mala propuesta de un amigo?", target: 4.6 },
+        esfuerzo: { q: "¿Entiende el valor del sacrificio para conseguir algo a largo plazo?", target: 4.6 },
+        reparacion: { q: "¿Tiene iniciativa para reconciliar a otros miembros de la familia?", target: 4.8 }
+    },
+    11: {
+        autocontrol: { q: "¿Es capaz de autorregularse ante un comentario que no le gusta?", target: 4.5 },
+        responsabilidad: { q: "¿Cumple con sus tareas de casa de forma sistemática y sin aviso?", target: 4.4 },
+        respeto: { q: "¿Valora el tiempo y el esfuerzo que haces por él/ella de corazón?", target: 4.7 },
+        autonomia: { q: "¿Planifica su semana de exámenes o retos con previsión?", target: 4.8 },
+        emocional: { q: "¿Muestra una autoestima sólida, reconociendo errores y aciertos?", target: 4.8 },
+        social: { q: "¿Se integra bien en distintos grupos sociales sin timidez extrema?", target: 4.7 },
+        esfuerzo: { q: "¿Persiste en retos intelectuales o físicos de alta dificultad?", target: 4.7 },
+        reparacion: { q: "¿Busca la paz familiar reconociendo su impacto en los demás?", target: 4.9 }
+    },
+    12: {
+        autocontrol: { q: "¿Controla su reactividad (portazos, malas caras) en discusiones?", target: 4.6 },
+        responsabilidad: { q: "¿Gestiona su propia higiene y orden de cuarto sin supervisión?", target: 4.5 },
+        respeto: { q: "¿Entiende y respeta los momentos de descanso de los padres?", target: 4.8 },
+        autonomia: { q: "¿Inicia actividades de ocio o aprendizaje de forma independiente?", target: 4.9 },
+        emocional: { q: "¿Distinga entre lo que siente (emoción) y lo que debe hacer?", target: 4.9 },
+        social: { q: "¿Elige amistades que le suman y le respetan de forma madura?", target: 4.8 },
+        esfuerzo: { q: "¿Acepta el rigor necesario para alcanzar la excelencia en algo?", target: 4.8 },
+        reparacion: { q: "¿Es capaz de pedir perdón de forma profunda y sincera?", target: 5.0 }
+    },
+    13: {
+        autocontrol: { q: "¿Gestiona el uso de pantallas de forma ética y con autocontrol?", target: 4.7 },
+        responsabilidad: { q: "¿Es consciente de su impacto económico en el hogar?", target: 4.6 },
+        respeto: { q: "¿Argumenta sus opiniones sin usar la humillación o el desprecio?", target: 4.9 },
+        autonomia: { q: "¿Es capaz de cuidar de un hermano menor o de una mascota solo?", target: 5.0 },
+        emocional: { q: "¿Maneja la presión del grupo sin perder sus propios valores?", target: 5.0 },
+        social: { q: "¿Muestra habilidades de liderazgo positivo en sus grupos?", target: 4.9 },
+        esfuerzo: { q: "¿Trabaja por objetivos que no tienen una recompensa inmediata?", target: 4.9 },
+        reparacion: { q: "¿Toma la iniciativa para sanar heridas tras un mal día familiar?", target: 5.0 }
+    },
+    14: {
+        autocontrol: { q: "¿Es capaz de mantener la calma en entornos de alta provocación?", target: 4.8 },
+        responsabilidad: { q: "¿Asume las consecuencias de sus actos sin culpar a otros?", target: 4.7 },
+        respeto: { q: "¿Trata con igual dignidad a personas de cualquier condición?", target: 5.0 },
+        autonomia: { q: "¿Gestiona sus trámites personales (médico, papeles) con guía?", target: 5.0 },
+        emocional: { q: "¿Sabe procesar el fracaso sin que afecte a su valor personal?", target: 5.0 },
+        social: { q: "¿Es un referente de confianza para sus amigos y familia?", target: 5.0 },
+        esfuerzo: { q: "¿Busca la superación personal constante en sus talentos?", target: 5.0 },
+        reparacion: { q: "¿Es un mediador de paz natural en los conflictos que presencia?", target: 5.0 }
+    },
+    15: {
+        autocontrol: { q: "¿Domina sus impulsos y sabe esperar el momento oportuno para cada acción?", target: 4.9 },
+        responsabilidad: { q: "¿Es un pilar de ayuda en la organización familiar?", target: 4.8 },
+        respeto: { q: "¿Su lenguaje y trato reflejan una madurez humana profunda?", target: 5.0 },
+        autonomia: { q: "¿Es capaz de viajar o moverse con total autonomía y seguridad?", target: 5.0 },
+        emocional: { q: "¿Tiene un autoconocimiento profundo y sabe autorregularse solo?", target: 5.0 },
+        social: { q: "¿Sus relaciones se basan en la entrega y el respeto mutuo?", target: 5.0 },
+        esfuerzo: { q: "¿Entiende que el esfuerzo es la base de cualquier logro virtuoso?", target: 5.0 },
+        reparacion: { q: "¿Pide perdón y repara incluso errores sutiles de trato?", target: 5.0 }
+    },
+    16: {
+        autocontrol: { q: "¿Muestra un dominio de sí mismo propio de un adulto maduro?", target: 5.0 },
+        responsabilidad: { q: "¿Es totalmente responsable de sus compromisos y palabras?", target: 4.9 },
+        respeto: { q: "¿Es un ejemplo de cortesía y honor en su trato diario?", target: 5.0 },
+        autonomia: { q: "¿Gestiona su vida personal con independencia y criterio sólido?", target: 5.0 },
+        emocional: { q: "¿Es capaz de acompañar las emociones de otros con solidez?", target: 5.0 },
+        social: { q: "¿Es un ciudadano consciente y comprometido con el bien común?", target: 5.0 },
+        esfuerzo: { q: "¿Valora el trabajo bien hecho por encima de la comodidad?", target: 5.0 },
+        reparacion: { q: "¿Es un motor activo de perdón y reconciliación familiar?", target: 5.0 }
+    },
+    17: {
+        autocontrol: { q: "¿Refleja serenidad incluso en situaciones de estrés máximo?", target: 5.0 },
+        responsabilidad: { q: "¿Su nivel de fiabilidad es absoluto ante cualquier encargo?", target: 5.0 },
+        respeto: { q: "¿Vive el respeto como un valor sagrado hacia toda persona?", target: 5.0 },
+        autonomia: { q: "¿Está listo para la independencia total con criterio moral?", target: 5.0 },
+        emocional: { q: "¿Tiene una inteligencia emocional orientada al servicio?", target: 5.0 },
+        social: { q: "¿Construye comunidades de bien allá donde va?", target: 5.0 },
+        esfuerzo: { q: "¿Vive el esfuerzo con alegría por el propósito que le guía?", target: 5.0 },
+        reparacion: { q: "¿Es capaz de perdonar de forma heroica y restaurar?", target: 5.0 }
+    },
+    18: {
+        autocontrol: { q: "¿Es dueño de sus actos y emociones con maestría humana?", target: 5.0 },
+        responsabilidad: { q: "¿Asume su papel en el mundo con total responsabilidad?", target: 5.0 },
+        respeto: { q: "¿Su trato es exquisito y respeta la libertad de los demás?", target: 5.0 },
+        autonomia: { q: "¿Es un adulto autónomo, con propósito y valores firmes?", target: 5.0 },
+        emocional: { q: "¿Mantiene su paz interior y sabe dársela a los demás?", target: 5.0 },
+        social: { q: "¿Es un líder humilde que trabaja por un mundo mejor?", target: 5.0 },
+        esfuerzo: { q: "¿No teme al sacrificio si el bien lo requiere?", target: 5.0 },
+        reparacion: { q: "¿Vive la caridad y el perdón como su ley de vida?", target: 5.0 }
+    }
+};

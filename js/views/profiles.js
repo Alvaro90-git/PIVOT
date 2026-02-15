@@ -1,5 +1,5 @@
 import { state, save } from '../state.js';
-import { RADAR_AREAS, RADAR_INDICATORS, TEMPERAMENTS } from '../data.js';
+import { RADAR_AREAS, RADAR_INDICATORS, TEMPERAMENTS, DIAGNOSIS_MATRIX } from '../data.js';
 import { calculateAge, calculateInitialRadar, getAgeBracket } from '../logic.js';
 
 /**
@@ -88,7 +88,8 @@ window.goToStep3 = function (id) {
 };
 
 window.finalizeEdit = function (id) {
-  const radar = calculateInitialRadar(state.editData.responses);
+  const age = state.editData.birthDate ? calculateAge(state.editData.birthDate) : 5;
+  const radar = calculateInitialRadar(state.editData.responses, age);
 
   if (id) {
     const c = state.children.find(ch => ch.id === id);
@@ -256,20 +257,21 @@ function renderStep3(container, id) {
             <div style="display:flex; flex-direction:column; gap:20px;">
                 ${Object.keys(RADAR_AREAS).map(key => {
       const area = RADAR_AREAS[key];
-      const question = (indicators && indicators[key]) ? indicators[key] : 'Indicador pendiente.';
+      const ageMatrix = DIAGNOSIS_MATRIX[age] || DIAGNOSIS_MATRIX[1];
+      const question = ageMatrix[key]?.q || 'Indicador pendiente.';
       const val = state.editData.responses[key] || 0;
       return `
                         <div class="os-card" style="background:rgba(30, 41, 59, 0.5); padding:20px; border-radius:24px;">
                             <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                                <span style="font-size:18px;">${area.icon}</span>
-                                <span style="color:white; font-weight:800; font-size:13px; text-transform:uppercase;">${area.name}</span>
+                                <div style="width:32px; height:32px; background:rgba(255,255,255,0.05); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;">${area.icon}</div>
+                                <span style="color:white; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;">${area.name}</span>
                             </div>
-                            <p style="color:rgba(255,255,255,0.8); font-size:14px; margin-bottom:15px; font-style:italic;">"${question}"</p>
+                            <p style="color:rgba(255,255,255,0.8); font-size:15px; margin-bottom:18px; line-height:1.5; font-style:italic;">"${question}"</p>
                             
                             <div style="display:flex; gap:8px;">
                                 ${['No', 'A veces', 'Sí'].map((label, idx) => `
                                     <button type="button" onclick="window.setEditResponse('${key}', ${idx})" 
-                                            style="flex:1; padding:10px; border-radius:12px; border:1px solid ${val === idx ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${val === idx ? 'rgba(245, 158, 11, 0.2)' : 'transparent'}; color:white; font-size:12px; font-weight:700; cursor:pointer;">
+                                            style="flex:1; padding:12px; border-radius:14px; border:1px solid ${val === idx ? '#F59E0B' : 'rgba(255,255,255,0.1)'}; background:${val === idx ? 'rgba(245, 158, 11, 0.2)' : 'transparent'}; color:white; font-size:12px; font-weight:800; cursor:pointer; transition:0.2s;">
                                         ${label}
                                     </button>
                                 `).join('')}
