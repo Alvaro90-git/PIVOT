@@ -314,24 +314,43 @@ export function openExternalResource(url, title, resourceId) {
 }
 
 function generatePedagogicalContent(parentStyle, childTemp, age) {
-    const hour = new Date().getHours();
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay(); // 0 = Sunday, 6 = Saturday
+    const isWeekend = (day === 0 || day === 6);
+
     let timeContext = "Momento del día";
     let timeIcon = "🕒";
     let timeNeeds = [];
 
-    // Time context logic
+    // ENHANCED TEMPORAL LOGIC (Weekend vs Weekday)
     if (hour >= 6 && hour < 12) {
-        timeContext = "Ritmo de mañana";
         timeIcon = "🌅";
-        timeNeeds = ["Previsibilidad en la rutina", "Conexión antes de la separación"];
+        if (isWeekend) {
+            timeContext = "Mañana de calma";
+            timeNeeds = ["Tiempo de juego compartido", "Desayuno sin prisas"];
+        } else {
+            timeContext = "Ritmo de mañana escolar";
+            timeNeeds = ["Previsibilidad en la rutina", "Conexión antes de la separación"];
+        }
     } else if (hour >= 12 && hour < 20) {
-        timeContext = "Vuelta a casa / Tarde";
         timeIcon = "🌇";
-        timeNeeds = ["Descompresión tras el colegio", "Tiempo de juego no dirigido"];
+        if (isWeekend) {
+            timeContext = "Tarde en familia";
+            timeNeeds = ["Ocio creativo", "Conexión emocional profunda"];
+        } else {
+            timeContext = "Vuelta a casa / Tarde";
+            timeNeeds = ["Descompresión tras el colegio", "Tiempo de juego no dirigido"];
+        }
     } else {
-        timeContext = "Cierre del día / Sueño";
         timeIcon = "🌙";
-        timeNeeds = ["Bajar revoluciones sensoriales", "Evento de seguridad"];
+        if (isWeekend) {
+            timeContext = "Cierre de fin de semana";
+            timeNeeds = ["Anticipación de la rutina semanal", "Momento de paz familiar"];
+        } else {
+            timeContext = "Cierre del día / Sueño";
+            timeNeeds = ["Bajar revoluciones sensoriales", "Vínculo de seguridad"];
+        }
     }
 
     const stageKey = age <= 3 ? 'bebe' : (age <= 6 ? 'infantil' : (age <= 12 ? 'primaria' : 'adolescente'));
@@ -434,7 +453,7 @@ function generateHarmonyInsights(pRadar, cRadar, childName) {
     insights.push({
         icon: '🌟',
         title: `Vuestra Fortaleza: ${strength.name}`,
-        text: `Vuestra conexión en este eje es vuestro motor. Tu capacidad de ${strength.name.toLowerCase()} resuena positivamente en ${childName}.`
+        text: `Vuestra conexión en este eje es vuestro motor. Tu capacidad de ${strength.name.toLowerCase()} es el espejo en el que ${childName} se mira para crecer con seguridad.`
     });
 
     // 2. Identify Opportunity (Parent > Child gap)
@@ -444,14 +463,14 @@ function generateHarmonyInsights(pRadar, cRadar, childName) {
     if (opportunity && opportunity.gap > 0.5) {
         insights.push({
             icon: '🎯',
-            title: `Oportunidad de Guía`,
-            text: `Tienes un gran nivel de ${opportunity.name}. Ese es el "excedente" que ${childName} necesita de ti para mejorar su ${axes.find(a => a.name === opportunity.name).name.toLowerCase()}.`
+            title: `Alineación en ${opportunity.name}`,
+            text: `Como tú puntúas alto en ${opportunity.name.toLowerCase()}, tienes una oportunidad de oro para "prestarle" tu calma a ${childName}. Tu ejemplo es su mejor herramienta de aprendizaje.`
         });
     } else {
         insights.push({
             icon: '🕊️',
-            title: `Equilibrio Natural`,
-            text: `Vuestros ritmos están muy acompasados. No hay grandes desajustes, seguid cultivando la presencia diaria.`
+            title: `Equilibrio de Sintonía`,
+            text: `Vuestros ritmos están muy acompasados. No hay necesidad de forzar cambios; el reto ahora es mantener esta presencia afectuosa constante.`
         });
     }
 
@@ -462,7 +481,7 @@ function generateHarmonyInsights(pRadar, cRadar, childName) {
     insights.push({
         icon: '⛰️',
         title: `Reto Compartido: ${challenge.name}`,
-        text: `Es el área donde ambos podéis crecer. Si tú trabajas tu ${challenge.icon}, será mucho más fácil para ${childName} avanzar en la suya.`
+        text: `Este es vuestro terreno de juego esta semana. Si tú hoy te enfocas un poco más en tu ${challenge.name.toLowerCase()}, verás cómo la conducta de ${childName} se relaja casi sin daros cuenta.`
     });
 
     return insights.slice(0, 3);

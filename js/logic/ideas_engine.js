@@ -32,7 +32,7 @@ const IMAGES = {
     CUENTO: 'assets/images/card_cuento.png'
 };
 
-const IDEAS_VERSION = 2; // Incrementar para forzar refresco de caché
+const IDEAS_VERSION = 5; // Incrementar para forzar refresco de caché
 
 export async function getPersonalizedIdeas() {
     const context = getIdeasContext();
@@ -79,6 +79,7 @@ REGLAS DE TONO Y SUSTANCIA (Prioridad Máxima):
 - Los valores (Amor, Fe, Virtudes) se deben vivir en la ACCIÓN del juego/evento, no explicarse con etiquetas pesadas. 
 - Evita que las actividades parezcan una clase o una catequesis. Normaliza los juegos (ej: un escondite sigue siendo un escondite, pero diseñado para dar seguridad o unión).
 - COMPOSICIÓN: Solo un padre (papá) y una madre (mamá).
+- ALINEACIÓN PARENTAL: Tus argumentos deben centrarse en cómo la calma y virtud del padre/madre "se prestan" al hijo. Si el hijo tiene un área de mejora (ej: autocontrol), explica cómo la SERENIDAD del padre hoy le ayudará a regularse. 
 
 MISIÓN:
 - Si es tarde/noche (19h-7h): Propón un "EVENTO" de calma, paz o bendición familiar.
@@ -88,6 +89,7 @@ MISIÓN:
 CONTEXTO TEMPORAL CRÍTICO:
 - Hoy es: ${dayName} (${dayType}).
 - Hora actual: ${currentHour}:00h (${context.momentLabel}).
+- REGLA DE FIN DE SEMANA: Si es fin de semana (Sábado/Domingo), PROHIBIDO mencionar colegio, deberes o mochilas. Las propuestas son de ocio y paz familiar.
 - ADVERTENCIA: No propongas actividades de otros días. Si hoy es ${dayName}, la propuesta es exclusivamente para hoy ${dayName}.
 
 CONTEXTO FAMILIAR:

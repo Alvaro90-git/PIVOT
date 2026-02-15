@@ -96,11 +96,15 @@ export function getContextAdvice(child) {
         }
         // TARDES
         if (hour >= 17 && hour <= 19) {
+            if (day === 0) return { sit: 'social', title: 'Domingo de Calma', text: 'Tarde de puerto seguro. Una actividad tranquila juntos preparará su corazón para la semana escolar sin estrés.' };
             if (isWeekend) return { sit: 'social', title: 'Conexión Total', text: 'Momento ideal para un juego de mesa o una actividad compartida sin prisas.' };
             return { sit: 'pantallas_resistencia', title: 'Gestión de Pantallas', text: 'Alerta de fin de tiempo. Prepáralo 5 minutos antes para evitar rabieta.' };
         }
         // NOCHES
-        if (hour >= 20) return { sit: 'bebe_sueno', title: 'Rutina Nocturna', text: 'Es tarde. Una rutina de calma ahora evitará tensión al ir a la cama.' };
+        if (hour >= 20) {
+            if (day === 0) return { sit: 'bebe_sueno', title: 'Paz de Domingo', text: 'Cierre de semana. Un momento de lectura o charla suave hoy le dará la paz necesaria para mañana.' };
+            return { sit: 'bebe_sueno', title: 'Rutina Nocturna', text: 'Es tarde. Una rutina de calma ahora evitará tensión al ir a la cama.' };
+        }
 
         return { sit: 'rabietas', title: 'Orden Activo', text: 'Momento de transición. Invítale a recoger sus cosas como un juego.' };
     }
