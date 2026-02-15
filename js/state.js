@@ -43,11 +43,14 @@ const DEFAULT_STATE = {
     currentChildId: '1',
     selectedChildId: null,
     streak: 0,
+    userId: null,
     view: 'login',
     selectedTipId: null,
     cachedIdeas: null,
     lastIdeasUpdate: 0,
     hasSeenTour: false,
+    collaborations: [], // Shared children metadata
+    pendingApprovals: [], // Security handshakes
     mentorMessages: [],
     mentorPreferences: { likesBooks: true, lastTopics: [] },
     editStep: 1,

@@ -7,6 +7,10 @@ console.log("PIVOT: app.js loaded");
 document.documentElement.setAttribute('data-pivot-loaded', 'true');
 
 window.getWeeklyChallenges = getWeeklyChallenges;
+import { CloudService } from './cloud_service.js';
+
+// Init Cloud Identity
+CloudService.ensureAccount();
 
 // --- STEP 1: Global Bridge (Fisura Cero) ---
 // Define core functions before any other imports so they are available globally

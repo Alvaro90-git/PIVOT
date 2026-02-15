@@ -230,7 +230,33 @@ body {
   box-shadow: 0 15px 35px rgba(220, 38, 38, 0.4);
   cursor: pointer;
   animation: pulse 2s infinite;
-  transition: 0.3s;
+  text-transform: uppercase;
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+    border-color: rgba(245, 158, 11, 0.8);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px) scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 .pivot-anchor-btn h2 {

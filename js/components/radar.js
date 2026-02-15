@@ -186,7 +186,7 @@ export function getParentRadarSVG(parent) {
 
 window.getParentRadarSVG = getParentRadarSVG;
 
-export function getHarmonyRadarSVG(parentData, childData, childAge = 5) {
+export function getHarmonyRadarSVG(parentData, childData, childAge = 5, coParentData = null) {
    if (!parentData || !childData) return '';
    const ageMatrix = DIAGNOSIS_MATRIX[childAge] || DIAGNOSIS_MATRIX[5];
    const toRad = (deg) => (deg * Math.PI) / 180;
@@ -205,6 +205,7 @@ export function getHarmonyRadarSVG(parentData, childData, childAge = 5) {
 
    const angleStep = 360 / axes.length;
    let pPoints = [];
+   let coPoints = [];
    let cPoints = [];
    let targetPoints = [];
    let axesSvg = '';
@@ -212,16 +213,24 @@ export function getHarmonyRadarSVG(parentData, childData, childAge = 5) {
    axes.forEach((axis, i) => {
       const angle = i * angleStep - 90;
       const pVal = parentData[axis.pKey] || 1;
+      const coVal = coParentData ? (coParentData[axis.pKey] || 1) : null;
       const cVal = childData[axis.cKey] || 1;
       const targetVal = ageMatrix[axis.cKey]?.target || 4.5; // Meta específica por edad de la Matriz MICP
 
       const pRadius = (pVal / 5) * radius;
+      const coRadius = coVal !== null ? (coVal / 5) * radius : null;
       const cRadius = (cVal / 5) * radius;
       const tRadius = (targetVal / 5) * radius;
 
       const px = c + pRadius * Math.cos(toRad(angle));
       const py = c + pRadius * Math.sin(toRad(angle));
       pPoints.push(`${px},${py}`);
+
+      if (coRadius !== null) {
+         const cox = c + coRadius * Math.cos(toRad(angle));
+         const coy = c + coRadius * Math.sin(toRad(angle));
+         coPoints.push(`${cox},${coy}`);
+      }
 
       const cx = c + cRadius * Math.cos(toRad(angle));
       const cy = c + cRadius * Math.sin(toRad(angle));
@@ -253,17 +262,29 @@ export function getHarmonyRadarSVG(parentData, childData, childAge = 5) {
       <!-- CHILD AREA -->
       <path d="M ${cPoints.join(' L ')} Z" fill="rgba(34, 211, 238, 0.15)" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round" />
       
+      ${coParentData ? `
+      <!-- CO-PARENT AREA (DASHED) -->
+      <path d="M ${coPoints.join(' L ')} Z" fill="none" stroke="rgba(167, 139, 250, 0.6)" stroke-width="2" stroke-dasharray="2 2" />
+      ` : ''}
+
       <!-- PARENT AREA -->
       <path d="M ${pPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
       
       <!-- LEGEND -->
-      <g transform="translate(${c - 85}, ${size - 10})">
+      <g transform="translate(${c - 95}, ${size - 10})">
          <circle cx="0" cy="0" r="3" fill="#F59E0B" />
-         <text x="8" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">TÚ</text>
-         <circle cx="45" cy="0" r="3" fill="#3B82F6" />
-         <text x="53" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">HIJO</text>
-         <circle cx="95" cy="0" r="3" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 1" />
-         <text x="103" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">META COMÚN</text>
+         <text x="8" y="4" fill="rgba(255,255,255,0.5)" font-size="7" font-weight="700">TÚ</text>
+         
+         ${coParentData ? `
+         <circle cx="35" cy="0" r="3" fill="none" stroke="#A78BFA" stroke-width="1" stroke-dasharray="1 1" />
+         <text x="43" y="4" fill="rgba(255,255,255,0.5)" font-size="7" font-weight="700">OTRO MENTOR</text>
+         ` : ''}
+
+         <circle cx="${coParentData ? 100 : 45}" cy="0" r="3" fill="#3B82F6" />
+         <text x="${coParentData ? 108 : 53}" y="4" fill="rgba(255,255,255,0.5)" font-size="7" font-weight="700">HIJO</text>
+         
+         <circle cx="${coParentData ? 140 : 95}" cy="0" r="3" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 1" />
+         <text x="${coParentData ? 148 : 103}" y="4" fill="rgba(255,255,255,0.5)" font-size="7" font-weight="700">META</text>
       </g>
    </svg>
    `;

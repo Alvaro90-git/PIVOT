@@ -1,6 +1,7 @@
 import { state, save } from '../state.js';
 import { RADAR_AREAS, RADAR_INDICATORS, TEMPERAMENTS, DIAGNOSIS_MATRIX } from '../data.js';
 import { calculateAge, calculateInitialRadar, getAgeBracket } from '../logic.js';
+import { CloudService } from '../cloud_service.js';
 
 /**
  * PIVOT PROFILE WIZARD - ROBUSTNESS LEVEL: GOD MODE
@@ -156,28 +157,129 @@ window.deleteChild = function (id) {
   }
 };
 
+window.showInvitationGenerator = async function (childId) {
+  const code = await CloudService.generateInvitation(childId);
+  if (!code) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'pivot-modal-overlay';
+  modal.innerHTML = `
+        <div class="os-card modal-content" style="max-width:320px; padding:30px; text-align:center; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div style="font-size:40px; margin-bottom:15px;">🤝</div>
+            <h3 style="color:white; margin:0 0 10px;">Alianza Educativa</h3>
+            <p style="color:rgba(255,255,255,0.5); font-size:13px; line-height:1.4; margin-bottom:25px;">Pásale este código al otro progenitor. Caduca en 10 min.</p>
+            
+            <div style="background:rgba(245, 158, 11, 0.1); border:2px dashed #F59E0B; border-radius:18px; padding:20px; margin-bottom:25px;">
+                <span style="font-size:32px; font-weight:900; color:#F59E0B; letter-spacing:5px;">${code}</span>
+            </div>
+            
+            <button onclick="this.closest('.pivot-modal-overlay').remove()" class="btn-primary" style="background:#1E293B; border:1px solid rgba(255,255,255,0.1);">CERRAR</button>
+        </div>
+    `;
+  document.body.appendChild(modal);
+};
+
+window.showVincularHijo = function () {
+  const modal = document.createElement('div');
+  modal.className = 'pivot-modal-overlay';
+  modal.innerHTML = `
+        <div class="os-card modal-content" style="max-width:320px; padding:30px; text-align:center;">
+            <div style="font-size:40px; margin-bottom:15px;">🔑</div>
+            <h3 style="color:white; margin:0 0 10px;">Vincular Hijo</h3>
+            <p style="color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:20px;">Introduce el código que te han enviado.</p>
+            
+            <input type="text" id="vincular-code" maxlength="6" class="input-premium" placeholder="000 000" style="text-align:center; font-size:24px; letter-spacing:4px; margin-bottom:20px;">
+            
+            <div style="display:flex; gap:10px;">
+                <button onclick="this.closest('.pivot-modal-overlay').remove()" style="flex:1; background:none; border:none; color:white; font-size:12px; font-weight:700;">Cancelar</button>
+                <button onclick="window.processVinculacion(this)" class="btn-primary" style="flex:2;">VINCULAR</button>
+            </div>
+        </div>
+    `;
+  document.body.appendChild(modal);
+};
+
+window.processVinculacion = async function (btn) {
+  const code = document.getElementById('vincular-code').value;
+  try {
+    btn.innerHTML = 'VALIDANDO...';
+    await CloudService.joinWithCode(code);
+    btn.closest('.pivot-modal-overlay').innerHTML = `
+            <div class="os-card modal-content" style="max-width:320px; padding:30px; text-align:center;">
+                <div style="font-size:40px; margin-bottom:15px;">⏳</div>
+                <h3 style="color:white; margin:0 0 10px;">Petición Enviada</h3>
+                <p style="color:rgba(255,255,255,0.5); font-size:13px;">Hemos avisado al otro progenitor para que autorice la conexión (Apretón de Manos). Te avisaremos pronto.</p>
+                <button onclick="this.closest('.pivot-modal-overlay').remove()" class="btn-primary" style="margin-top:20px;">ENTENDIDO</button>
+            </div>
+        `;
+  } catch (e) {
+    alert(e.message);
+    btn.innerHTML = 'VINCULAR';
+  }
+};
+
+window.handleHandshake = async function (id, approved) {
+  const res = await CloudService.finalizeHandshake(id, approved);
+  if (approved && res) {
+    alert("¡Alianza creada con éxito! Ahora compartís el perfil de " + res.childName);
+  }
+  window.render();
+};
+
 // Render Functions
 export function renderProfiles(container) {
+  // Check for pending handshakes (Simulation)
+  const handshakes = CloudService.checkApprovals ? simCloud.pendingApprovals.filter(a => a.targetParentId === state.userId) : [];
+
   container.innerHTML = `
     <div class="view scroll-y p-20" style="padding-bottom:120px;">
       <header class="header-compact"><h2 style="font-size:24px; font-weight:900;">Gestión Familiar</h2></header>
       
-      <span class="label" style="margin:20px 0 15px; display:block;">Crecimiento de Hijos</span>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-      ${state.children.map(c => `
-        <div class="os-card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0; padding:15px;">
-          <div style="display:flex; align-items:center; gap:15px; flex:1; cursor:pointer;" onclick="window.startEditChild('${c.id}')">
-            <div style="width:45px; height:45px; background:linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(255,255,255,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#F59E0B; font-weight:900; font-size:18px;">${c.name[0]}</div>
-            <div>
-               <h4 style="margin:0; color:white;">${c.name}</h4>
-               <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:2px 0 0;">${c.birthDate ? calculateAge(c.birthDate) + ' años' : 'Edad pendiente'}</p>
+      ${handshakes.length > 0 ? `
+        <div class="os-card" style="background:linear-gradient(135deg, #0F172A, #1E1B4B); border:1px solid #F59E0B; margin:20px 0; padding:20px; animation: pulseGlow 2s infinite;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                <span style="font-size:24px;">🛡️</span>
+                <div style="color:white; font-size:14px; font-weight:800;">Apretón de Manos Pendiente</div>
             </div>
+            <p style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.4; margin-bottom:15px;">
+                <b>${handshakes[0].requesterName}</b> quiere unirse a la crianza de <b>${handshakes[0].childName}</b>. ¿Autorizas la conexión?
+            </p>
+            <div style="display:flex; gap:10px;">
+                <button onclick="window.handleHandshake('${handshakes[0].id}', false)" style="flex:1; background:rgba(255,255,255,0.05); border:none; border-radius:12px; height:40px; color:white; font-size:11px; font-weight:800; cursor:pointer;">DENEGAR</button>
+                <button onclick="window.handleHandshake('${handshakes[0].id}', true)" style="flex:2; background:#F59E0B; border:none; border-radius:12px; height:40px; color:white; font-size:11px; font-weight:900; cursor:pointer;">SÍ, AUTORIZAR</button>
+            </div>
+        </div>
+      ` : ''}
+
+      <span class="label" style="margin:20px 0 15px; display:block;">Crecimiento de Hijos</span>
+      <div style="display:flex; flex-direction:column; gap:15px;">
+      ${state.children.map(c => `
+        <div class="os-card" style="display:flex; flex-direction:column; gap:15px; margin-bottom:0; padding:18px; background:rgba(30, 41, 59, 1);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:15px; flex:1; cursor:pointer;" onclick="window.startEditChild('${c.id}')">
+                <div style="width:45px; height:45px; background:linear-gradient(135deg, #1E293B, #0F172A); border: 1px solid rgba(255,255,255,0.1); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#F59E0B; font-weight:900; font-size:18px;">${c.name[0]}</div>
+                <div>
+                   <h4 style="margin:0; color:white; font-size:16px;">${c.name}</h4>
+                   <p style="font-size:12px; color:rgba(255,255,255,0.4); margin:2px 0 0;">${c.birthDate ? calculateAge(c.birthDate) + ' años' : 'Edad pendiente'}</p>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button onclick="window.showInvitationGenerator('${c.id}')" style="background:rgba(34, 211, 238, 0.1); border:1px solid rgba(34, 211, 238, 0.3); border-radius:10px; padding:10px; color:#22D3EE; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
+                    <span style="font-size:9px; font-weight:900; letter-spacing:0.5px;">ALIANZA</span>
+                </button>
+              </div>
           </div>
-          <div style="display:flex; align-items:center; gap:15px;">
-            <button onclick="window.startEditChild('${c.id}')" style="background:none; border:none; color:#F59E0B; font-weight:800; font-size:10px; letter-spacing:1px; cursor:pointer; padding:10px;">EDITAR</button>
+          
+          <div style="height:1px; background:rgba(255,255,255,0.05);"></div>
+          
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="window.startEditChild('${c.id}')" style="background:none; border:none; color:rgba(255,255,255,0.3); font-weight:800; font-size:10px; letter-spacing:1px; cursor:pointer;">EDITAR FICHA</button>
+            </div>
             ${state.children.length > 1 ? `
-              <button onclick="window.deleteChild('${c.id}')" style="background:rgba(244, 63, 94, 0.1); border:none; border-radius:10px; padding:10px; color:#F43F5E; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              <button onclick="window.deleteChild('${c.id}')" style="background:none; border:none; color:rgba(244, 63, 94, 0.4); cursor:pointer;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
               </button>
             ` : ''}
           </div>
@@ -185,7 +287,12 @@ export function renderProfiles(container) {
       `).join('')}
       </div>
 
-      <button class="btn-primary" style="margin-top:25px; background:rgba(245, 158, 11, 0.05); color:#F59E0B; border:2px dashed rgba(245, 158, 11, 0.3);" onclick="window.startEditChild()">+ Añadir nuevo perfil</button>
+      <div style="margin-top:30px; display:flex; flex-direction:column; gap:12px;">
+        <button class="btn-primary" style="background:rgba(245, 158, 11, 0.05); color:#F59E0B; border:2px dashed rgba(245, 158, 11, 0.3);" onclick="window.startEditChild()">+ Añadir nuevo perfil</button>
+        <button class="btn-primary" style="background:rgba(255,255,255,0.03); color:white; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; gap:10px;" onclick="window.showVincularHijo()">
+            <span>🔑</span> Vincular perfil compartido
+        </button>
+      </div>
     </div>
   `;
 }
