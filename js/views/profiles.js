@@ -17,7 +17,16 @@ window.setEditGender = function (g) {
 
     state.editData.gender = g;
     console.log("PIVOT: Gender set to", g);
+
+    // Save scroll before render
+    const scrollEl = document.querySelector('.view.scroll-y');
+    const st = scrollEl ? scrollEl.scrollTop : 0;
+
     if (window.render) window.render();
+
+    // Restore scroll after render
+    const newScrollEl = document.querySelector('.view.scroll-y');
+    if (newScrollEl && st) newScrollEl.scrollTop = st;
   } catch (e) {
     console.error("PIVOT Error in setEditGender:", e);
   }
@@ -27,15 +36,33 @@ window.setEditTemperament = function (t) {
   try {
     state.editData.temperament = t.toLowerCase();
     console.log("PIVOT: Temperament set to", t);
+
+    // Save scroll before render
+    const scrollEl = document.querySelector('.view.scroll-y');
+    const st = scrollEl ? scrollEl.scrollTop : 0;
+
     if (window.render) window.render();
+
+    // Restore scroll after render
+    const newScrollEl = document.querySelector('.view.scroll-y');
+    if (newScrollEl && st) newScrollEl.scrollTop = st;
   } catch (e) {
     console.error("PIVOT Error in setEditTemperament:", e);
   }
 };
 
 window.setEditResponse = function (key, idx) {
+  // Save scroll before render
+  const scrollEl = document.querySelector('.view.scroll-y');
+  const st = scrollEl ? scrollEl.scrollTop : 0;
+
   state.editData.responses[key] = idx;
+
   if (window.render) window.render();
+
+  // Restore scroll after render
+  const newScrollEl = document.querySelector('.view.scroll-y');
+  if (newScrollEl && st) newScrollEl.scrollTop = st;
 };
 
 window.goToEditStep = function (step) {
