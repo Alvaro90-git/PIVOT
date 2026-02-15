@@ -1,6 +1,7 @@
 import { state } from '../state.js';
 import { PARENT_CHILD_MATCH_DB, RESOURCES_DB } from '../data.js';
 import { getDynamicMatch } from '../logic.js';
+import { getHarmonyRadarSVG } from '../components/radar.js';
 
 
 export function renderConnectionKeys(container, childId) {
@@ -122,6 +123,27 @@ export function renderConnectionKeys(container, childId) {
             <p style="color:white; font-size:16px; font-weight:600; line-height:1.4; margin-top:20px; font-style:italic;">
                 "${content.intro}"
             </p>
+        </div>
+
+        <!-- NEW: RADAR DE SINTONÍA -->
+        <div class="keys-section" style="margin-top:-10px; margin-bottom:30px;">
+            <div class="feature-card" style="background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(245, 158, 11, 0.2); padding: 25px;">
+                <span class="section-label" style="color:#F59E0B; text-align:center; margin-bottom:20px;">Radar de Sintonía</span>
+                
+                ${getHarmonyRadarSVG(parent.radar, child.radar)}
+
+                <div style="margin-top:25px; display:flex; flex-direction:column; gap:12px;">
+                    ${generateHarmonyInsights(parent.radar, child.radar, child.name).map(ins => `
+                        <div style="display:flex; gap:12px; align-items:start; background:rgba(255,255,255,0.03); padding:15px; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
+                            <span style="font-size:18px;">${ins.icon}</span>
+                            <div>
+                                <div style="color:white; font-size:13px; font-weight:800; margin-bottom:2px;">${ins.title}</div>
+                                <div style="color:rgba(255,255,255,0.5); font-size:12px; line-height:1.4;">${ins.text}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
         </div>
 
         <!-- SECTION 1: NECESIDADES -->
@@ -393,6 +415,57 @@ function generatePedagogicalContent(parentStyle, childTemp, age) {
     const finalNeeds = [...timeNeeds.slice(0, 1), ...pattern.baseNeeds.slice(0, 2)];
 
     return { ...pattern, needs: finalNeeds, timeContext, timeIcon, recommendedResources };
+}
+
+function generateHarmonyInsights(pRadar, cRadar, childName) {
+    const insights = [];
+    const axes = [
+        { name: 'Regulación', pKey: 'serenidad', cKey: 'autocontrol', icon: '🧘' },
+        { name: 'Autoridad', pKey: 'firmeza_afectuosa', cKey: 'respeto', icon: '⚖️' },
+        { name: 'Vínculo', pKey: 'conexion', cKey: 'social', icon: '🤝' },
+        { name: 'Autonomía', pKey: 'ejemplo', cKey: 'autonomia', icon: '🚀' },
+        { name: 'Compromiso', pKey: 'reparacion', cKey: 'responsabilidad', icon: '🌱' }
+    ];
+
+    // 1. Identify Strength (Highest combined or closest high match)
+    const strength = axes.map(a => ({ ...a, score: (pRadar[a.pKey] || 1) + (cRadar[a.cKey] || 1) }))
+        .sort((a, b) => b.score - a.score)[0];
+
+    insights.push({
+        icon: '🌟',
+        title: `Vuestra Fortaleza: ${strength.name}`,
+        text: `Vuestra conexión en este eje es vuestro motor. Tu capacidad de ${strength.name.toLowerCase()} resuena positivamente en ${childName}.`
+    });
+
+    // 2. Identify Opportunity (Parent > Child gap)
+    const opportunity = axes.map(a => ({ ...a, gap: (pRadar[a.pKey] || 1) - (cRadar[a.cKey] || 1) }))
+        .sort((a, b) => b.gap - a.gap)[0];
+
+    if (opportunity && opportunity.gap > 0.5) {
+        insights.push({
+            icon: '🎯',
+            title: `Oportunidad de Guía`,
+            text: `Tienes un gran nivel de ${opportunity.name}. Ese es el "excedente" que ${childName} necesita de ti para mejorar su ${axes.find(a => a.name === opportunity.name).name.toLowerCase()}.`
+        });
+    } else {
+        insights.push({
+            icon: '🕊️',
+            title: `Equilibrio Natural`,
+            text: `Vuestros ritmos están muy acompasados. No hay grandes desajustes, seguid cultivando la presencia diaria.`
+        });
+    }
+
+    // 3. Shared Challenge (Lowest combined)
+    const challenge = axes.map(a => ({ ...a, score: (pRadar[a.pKey] || 1) + (cRadar[a.cKey] || 1) }))
+        .sort((a, b) => a.score - b.score)[0];
+
+    insights.push({
+        icon: '⛰️',
+        title: `Reto Compartido: ${challenge.name}`,
+        text: `Es el área donde ambos podéis crecer. Si tú trabajas tu ${challenge.icon}, será mucho más fácil para ${childName} avanzar en la suya.`
+    });
+
+    return insights.slice(0, 3);
 }
 
 window.renderConnectionKeys = renderConnectionKeys;

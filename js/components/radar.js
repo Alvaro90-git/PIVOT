@@ -185,3 +185,73 @@ export function getParentRadarSVG(parent) {
 }
 
 window.getParentRadarSVG = getParentRadarSVG;
+
+export function getHarmonyRadarSVG(parentData, childData) {
+   if (!parentData || !childData) return '';
+   const toRad = (deg) => (deg * Math.PI) / 180;
+
+   const size = 300;
+   const c = size / 2;
+   const radius = 80;
+
+   const axes = [
+      { name: 'Regulación', pKey: 'serenidad', cKey: 'autocontrol' },
+      { name: 'Autoridad', pKey: 'firmeza_afectuosa', cKey: 'respeto' },
+      { name: 'Vínculo', pKey: 'conexion', cKey: 'social' },
+      { name: 'Autonomía', pKey: 'ejemplo', cKey: 'autonomia' },
+      { name: 'Compromiso', pKey: 'reparacion', cKey: 'responsabilidad' }
+   ];
+
+   const angleStep = 360 / axes.length;
+   let pPoints = [];
+   let cPoints = [];
+   let axesSvg = '';
+
+   axes.forEach((axis, i) => {
+      const angle = i * angleStep - 90;
+      const pVal = parentData[axis.pKey] || 1;
+      const cVal = childData[axis.cKey] || 1;
+
+      const pRadius = (pVal / 5) * radius;
+      const cRadius = (cVal / 5) * radius;
+
+      const px = c + pRadius * Math.cos(toRad(angle));
+      const py = c + pRadius * Math.sin(toRad(angle));
+      pPoints.push(`${px},${py}`);
+
+      const cx = c + cRadius * Math.cos(toRad(angle));
+      const cy = c + cRadius * Math.sin(toRad(angle));
+      cPoints.push(`${cx},${cy}`);
+
+      // Axis Line
+      const ox = c + radius * Math.cos(toRad(angle));
+      const oy = c + radius * Math.sin(toRad(angle));
+      axesSvg += `<line x1="${c}" y1="${c}" x2="${ox}" y2="${oy}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
+
+      // Label
+      const lx = c + (radius + 20) * Math.cos(toRad(angle));
+      const ly = c + (radius + 20) * Math.sin(toRad(angle));
+      axesSvg += `<text x="${lx}" y="${ly}" fill="rgba(255,255,255,0.4)" font-size="8" font-weight="800" text-anchor="middle" dominant-baseline="middle" style="text-transform:uppercase;">${axis.name}</text>`;
+   });
+
+   return `
+   <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="margin:0 auto; display:block;">
+      ${[1, 2, 3, 4, 5].map(l => `<circle cx="${c}" cy="${c}" r="${(l / 5) * radius}" fill="none" stroke="rgba(255,255,255,0.05)" />`).join('')}
+      ${axesSvg}
+      <!-- CHILD AREA -->
+      <path d="M ${cPoints.join(' L ')} Z" fill="rgba(59, 130, 246, 0.2)" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round" />
+      <!-- PARENT AREA -->
+      <path d="M ${pPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.3)" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      
+      <!-- LEGEND -->
+      <g transform="translate(${c - 60}, ${size - 10})">
+         <circle cx="0" cy="0" r="3" fill="#F59E0B" />
+         <text x="8" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">TÚ</text>
+         <circle cx="50" cy="0" r="3" fill="#3B82F6" />
+         <text x="58" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">HIJO</text>
+      </g>
+   </svg>
+   `;
+}
+
+window.getHarmonyRadarSVG = getHarmonyRadarSVG;
