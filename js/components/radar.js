@@ -205,15 +205,18 @@ export function getHarmonyRadarSVG(parentData, childData) {
    const angleStep = 360 / axes.length;
    let pPoints = [];
    let cPoints = [];
+   let targetPoints = [];
    let axesSvg = '';
 
    axes.forEach((axis, i) => {
       const angle = i * angleStep - 90;
       const pVal = parentData[axis.pKey] || 1;
       const cVal = childData[axis.cKey] || 1;
+      const targetVal = 4.5; // Objetivo común de maestría PIVOT
 
       const pRadius = (pVal / 5) * radius;
       const cRadius = (cVal / 5) * radius;
+      const tRadius = (targetVal / 5) * radius;
 
       const px = c + pRadius * Math.cos(toRad(angle));
       const py = c + pRadius * Math.sin(toRad(angle));
@@ -222,6 +225,10 @@ export function getHarmonyRadarSVG(parentData, childData) {
       const cx = c + cRadius * Math.cos(toRad(angle));
       const cy = c + cRadius * Math.sin(toRad(angle));
       cPoints.push(`${cx},${cy}`);
+
+      const tx = c + tRadius * Math.cos(toRad(angle));
+      const ty = c + tRadius * Math.sin(toRad(angle));
+      targetPoints.push(`${tx},${ty}`);
 
       // Axis Line
       const ox = c + radius * Math.cos(toRad(angle));
@@ -238,17 +245,24 @@ export function getHarmonyRadarSVG(parentData, childData) {
    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="margin:0 auto; display:block;">
       ${[1, 2, 3, 4, 5].map(l => `<circle cx="${c}" cy="${c}" r="${(l / 5) * radius}" fill="none" stroke="rgba(255,255,255,0.05)" />`).join('')}
       ${axesSvg}
+      
+      <!-- COMMON GOAL (DASHED) -->
+      <path d="M ${targetPoints.join(' L ')} Z" fill="none" stroke="rgba(34, 211, 238, 0.4)" stroke-width="1.5" stroke-dasharray="4 2" />
+
       <!-- CHILD AREA -->
-      <path d="M ${cPoints.join(' L ')} Z" fill="rgba(59, 130, 246, 0.2)" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round" />
+      <path d="M ${cPoints.join(' L ')} Z" fill="rgba(34, 211, 238, 0.15)" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round" />
+      
       <!-- PARENT AREA -->
-      <path d="M ${pPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.3)" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
+      <path d="M ${pPoints.join(' L ')} Z" fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" stroke-width="2" stroke-linejoin="round" />
       
       <!-- LEGEND -->
-      <g transform="translate(${c - 60}, ${size - 10})">
+      <g transform="translate(${c - 85}, ${size - 10})">
          <circle cx="0" cy="0" r="3" fill="#F59E0B" />
          <text x="8" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">TÚ</text>
-         <circle cx="50" cy="0" r="3" fill="#3B82F6" />
-         <text x="58" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">HIJO</text>
+         <circle cx="45" cy="0" r="3" fill="#3B82F6" />
+         <text x="53" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">HIJO</text>
+         <circle cx="95" cy="0" r="3" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="2 1" />
+         <text x="103" y="4" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="700">META COMÚN</text>
       </g>
    </svg>
    `;
